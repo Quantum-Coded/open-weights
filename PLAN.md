@@ -332,6 +332,29 @@ If not, say so plainly and draft the negative-result framing.
       and accuracy difference), and say plainly what counts as "same result": within the measured
       noise floor, not bit-identical text.
 - [ ] Finish `WRITEUP.md` and draft the LinkedIn post (below). **Dev posts it, not you.**
+- [ ] Blog article on Dev's site (added 4 Nov, Dev): a detailed long-form version of `WRITEUP.md`
+      published at https://www.devgaglani.in/blog. Code: `C:\Users\Dev Gaglani\portfolio\site\card`
+      (Next.js 16 app, repo `Quantum-Coded/portfolio-site`, Vercel deploys from `main`; read
+      `node_modules/next/dist/docs/` before touching routing, this Next.js version has breaking changes).
+  - New route `app/blog/weight-space-programming-deepseek/page.tsx` (static page in the site's sketch
+    style), with its own `metadata` (title, description, canonical, Open Graph) and an entry in
+    `app/sitemap.ts`.
+  - Add the post to `components/blog/blogData.ts` (`platform: "essay"`, `status: "published"`, real
+    date, internal `url`) and make the blog card link to the internal page instead of "Read on …".
+  - Content: everything in the write-up outline, in more depth (the loop excerpt, what Claude found
+    and changed, full results table with 95% CIs **and the noise floor next to every headline number**,
+    controls, side effects, lm-eval cross-check, audits, caveats, how to reproduce). Figures from
+    `figures.py` exported as optimised PNG/SVG into `public/blog/wsp/`; the 60 s explainer video
+    (H.264, a few MB) in the same folder with a poster frame, `muted playsInline controls`.
+  - Links: GitHub (Quantum-Coded/open-weights), the HF model repo, `REPRODUCE.md`, the original
+    MIT CSAIL post and the SD 3.5 replication. Byline: Dev Gaglani.
+  - Numbers in the article must match `analyze.py` output and `RUNLOG.md` exactly; a negative result
+    is published as a negative result.
+  - Check: `npm run lint`, `npm run build`, view the page locally at phone and desktop widths, then
+    commit and push (only Dev as author). Dev pre-authorised the site push (4 Nov); publish once Dev
+    has signed off the Checkpoint C results. Verify the live URL after Vercel deploys.
+  - Substack: Dev has no Substack. It was removed from the site on 4 Nov (`0d84ace`); never link or
+    mention Substack anywhere (article, LinkedIn post, README).
 
 ## Follow-up (after the fast-track post)
 
@@ -343,7 +366,7 @@ If not, say so plainly and draft the negative-result framing.
 
 ---
 
-## Write-up outline (`WRITEUP.md`)
+## Write-up outline (`WRITEUP.md`, also the skeleton of the devgaglani.in blog article)
 
 1. TL;DR: one table (base / edit / random / penalty / edit + penalty, with 95% CIs) and the headline sentence.
 2. The problem: what a loop looks like, with one real base-model trace.
@@ -375,7 +398,8 @@ Setup: RTX 4050 laptop, 50 model runs, pre-registered eval, all logs public.
 Write-up, model and demo in the comments.
 ```
 
-Post the video natively, put links in the first comment, and tag the original authors.
+Post the video natively, put links in the first comment (the devgaglani.in blog article first, then
+GitHub and the HF model), and tag the original authors.
 If the result is a "no", post that instead: "The Qwen fix doesn't transfer to DeepSeek, and here's why."
 
 ## Troubleshooting
