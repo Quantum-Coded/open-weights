@@ -8,3 +8,4 @@ numpy
 math-verify[antlr4_13_2]
 pillow
 imageio-ffmpeg
+matplotlib

@@ -111,3 +111,15 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   -5.0 pts). Five of five in the same direction is unlikely by chance (one-sided sign test p = 1/32), so the
   batch-invariant kernels may cost ~3 pts on this model. Comparisons stay fair (every arm uses the same kernels),
   but the write-up should say that absolute numbers are for batch-invariant kernels.
+
+## Phase 6: tooling while waiting (2026-11-05, CPU only, practice data)
+- Claude Code 2.1.318 installed in WSL (official installer, ~/.local/bin, Dev approved) for the editor session.
+- matplotlib 3.11.2 added to the venv (new packages only, nothing upgraded); requirements.txt and
+  requirements.lock.txt updated.
+- figures.py: fig1 accuracy/loop rate per arm with 95% CIs and the rerun noise band, fig2 projection (JSON input
+  after freeze), fig3 fixed vs broken. Statistics imported from analyze.py. Test renders on practice data
+  (demo/test_figures, watermarked).
+- space/app.py: Gradio side-by-side demo (greedy, 4,096 new tokens, loop badge via common.is_looping); both models
+  at once on >= 10 GB GPUs, in turn on the 4050. Own venv space/.venv (gradio 6.31.0 pins pillow < 13, so it stays
+  out of the main venv). UI build checked; generation untested until the edited model exists. Not deployed.
+- WRITEUP.md draft: baselines and noise floor filled in, edit numbers TBD.
