@@ -34,9 +34,11 @@ def load_llm(model_dir: str, max_len: int, gpu_util: float | None = None):
     from vllm import LLM
     if gpu_util is None:
         gpu_util = float(os.environ.get("WSP_GPU_UTIL", "0.80"))
+    # Attention backend pinned (auto-selection picks FLASH_ATTN on this GPU anyway); vLLM's
+    # batch-invariant mode (env VLLM_BATCH_INVARIANT=1) refuses to start unless it is explicit.
     return LLM(model=model_dir, dtype="bfloat16", max_model_len=max_len,
                gpu_memory_utilization=gpu_util, enable_prefix_caching=True,
-               seed=0)
+               attention_backend="FLASH_ATTN", seed=0)
 
 
 def free_llm(llm) -> None:

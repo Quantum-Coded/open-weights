@@ -213,14 +213,27 @@ Build the demo tooling, using **practice problems only** (never the sealed sets)
 
 - [ ] `make_demo_video.py`: takes a results file pair (base, edit) and a problem id, and renders a
       side-by-side MP4 built to be watched to the end and replayed. LinkedIn rewards watch time and
-      replays, and most people watch muted on a phone. Spec (revised 4 Nov, Dev):
-  - **Format:** 1080×1350 portrait, 30 fps, H.264 (`-preset veryfast`), Pillow frames + ffmpeg,
-    no sound. All meaning is in burned-in text.
+      replays, and most people watch muted on a phone. Spec (revised 4 Nov, Dev; landscape and
+      neobrutalist redesign later on 4 Nov, Dev):
+  - **Format:** 1920×1080 landscape (for LinkedIn), 30 fps, H.264 (`-preset veryfast`), Pillow
+    frames + ffmpeg, no sound. All meaning is in burned-in text.
+  - **Design:** light neobrutalism: cream paper, thick black rules, hard offset shadows, heavy
+    condensed caps for headings (Impact), monospace pane text, one blue block, red hand-lettered
+    notes, yellow/orange for repeated text, green for the answer. Layout top to bottom: masthead,
+    pinned PROBLEM strip, two panes with header counters, a status row (speed tags, 8K/12K/16K chips,
+    "Solved in N tokens"), an illustration strip, and a footer.
+  - **Illustration strip (bottom):** a looping 7.5 s animation of what the edit is: a pixel "Claude"
+    character beams into a 28-layer network drawing of the model; the layers the edit really touched
+    (read from the patch info) light up; the output box flips from the real looping snippet
+    ("BEFORE") to the real boxed answer ("AFTER EDIT"). It is labelled as an illustration. The same
+    strip is also exported on its own as a GIF (`--gif`) for the README and the blog article.
   - **Structure (~25–30 s):**
     - 0–2 s: both panes already streaming (no title card, no fade-in). Top caption:
       "Same model. Same question. One has 0.0Z% of its weights edited."
     - 2–10 s: text streams token by token at the same speed on both sides; the math problem stays
-      pinned at the top.
+      pinned at the top. (Real loops start after 3k–8k tokens and fixed answers take 2k–6k, so the
+      panes share one speed only for the first seconds; after that each pane shows its own real
+      speed tag.)
     - 10–18 s: left pane starts repeating. Flash the repeated span amber, show a "LOOP" badge, and
       keep its token counter climbing fast. Right pane keeps reasoning.
     - 18–23 s: right pane reaches `\boxed{answer}`, highlighted green, with "Solved in N tokens".
@@ -229,7 +242,7 @@ Build the demo tooling, using **practice problems only** (never the sealed sets)
       "No training. Laptop RTX 4050."
     - 28–30 s: cross-fade back to the first frame so it loops seamlessly (autoplay replays add watch time).
   - **Rules:**
-    - readable on a phone: monospace ≥ 28 px, max ~28 characters per line per pane;
+    - readable on a phone: pane monospace ≥ 44 px at 1920 wide, max ~30 characters per line per pane;
     - speed up dull stretches with a visible speed tag (e.g. "4x"); never fake or edit model text;
     - labels: left "DeepSeek-R1 1.5B (original)", right "After Claude's weight edit";
     - every frame comes from real logged outputs; the problem id and both result file names go in a
