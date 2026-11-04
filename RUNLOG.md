@@ -66,3 +66,4 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   cap, 2m43s) is byte-identical to bi5a, 5/5; summary batch_invariant=true.
 - eval_plan.md filled in: token cap 16,384, detector unchanged (pilot false positives 0 of 6 flagged),
   fast track MATH-500 --limit 200, kernel mode, noise-floor procedure and decision rule (confirmed by Dev).
+- Pre-registration commit: ea01b035c4ff76ad8a6116a635b24607d45988aa (eval_plan.md is read-only from here).
