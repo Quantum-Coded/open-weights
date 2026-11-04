@@ -56,18 +56,25 @@ def main():
     ap.add_argument("--limit", type=int, default=None, help="fixed random subset (seed 0)")
     ap.add_argument("--no-early-stop", action="store_true")
     ap.add_argument("--presence-penalty", type=float, default=0.0)
+    ap.add_argument("--order-seed", type=int, default=None,
+                    help="shuffle the order problems are fed to vLLM (same problems; changes which answers "
+                         "share a batch). Used only for the noise-floor reruns (eval_plan_amendment.md)")
     a = ap.parse_args()
 
     rows = load_set(a.set)
     if a.limit:
         rows = sorted(random.Random(0).sample(rows, a.limit), key=lambda r: r["id"])
     by_id = {r["id"]: r for r in rows}
+    if a.order_seed is not None:
+        rows = rows[:]
+        random.Random(a.order_seed).shuffle(rows)
 
     llm = load_llm(a.model, max_len=a.max_tokens + 1024)
     res = generate(llm, rows, max_tokens=a.max_tokens, early_stop=not a.no_early_stop,
                    presence_penalty=a.presence_penalty, **REGIMES[a.regime])
     free_llm(llm)
 
+    res.sort(key=lambda r: (r["id"], r["sample"]))   # file order independent of --order-seed
     for r in res:
         r["correct"] = grade(by_id[r["id"]], r["response"])
     tag = a.set.replace(":", "-")

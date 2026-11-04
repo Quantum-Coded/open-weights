@@ -90,3 +90,6 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   average ~2.4k tokens.
 - WSL memory raised (approved by Dev): C:\Users\Dev Gaglani\.wslconfig created with [wsl2] memory=12GB
   (host 15.6 GB), wsl --shutdown. Now: Mem 11 GiB total, swap 3.0 GiB; GPU still visible.
+- Amendment 1 (Dev approved): eval_plan_amendment.md adds 4 more normal-kernel base reruns (order-shuffled,
+  eval.py --order-seed) and rule (b'): edit net fixed - broken > largest |net| of any rerun. eval.py gained
+  --order-seed (shuffles feed order only; results file sorted by id, so existing commands are unchanged).

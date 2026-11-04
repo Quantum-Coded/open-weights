@@ -187,6 +187,9 @@ Run in this order, so the fast-track numbers exist first:
        then `python analyze.py --base results/base_math500_greedy.jsonl --arm results/base_rerun_math500_greedy.jsonl`.
        Record in `RUNLOG.md`: flips (correct↔incorrect, both directions), accuracy difference, loop-flag
        flips, and how many responses differ in text at all.
+3b. [ ] Amendment 1 (`eval_plan_amendment.md`, Dev, 4 Nov, committed before these runs): four more
+       normal-kernel reruns `base_rerun2`..`base_rerun5` with `--order-seed 2..5`; the decision rule
+       becomes "net fixed − broken > the largest |net| of any rerun" (b'), original rule still reported.
 4. [ ] Full sets, for the follow-up post (can keep running during Phase 5 only if they don't share the GPU with the editor; otherwise run them after freeze):
    - [ ] `--set math500 --regime greedy` (all 500), name `base_full`
    - [ ] `--set gsm8k_test400 --regime greedy`
