@@ -94,3 +94,20 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   eval.py --order-seed) and rule (b'): edit net fixed - broken > largest |net| of any rerun. eval.py gained
   --order-seed (shuffles feed order only; results file sorted by id, so existing commands are unchanged).
 - Amendment 1 commit: b6f9860ffe34f9f2c85b0009a8ab5bbce76fa7ca.
+- Amendment 1 reruns (normal kernels, --order-seed 2..5; 44m40s, 47m32s, 46m29s, 46m42s), vs base (66.0%, loops 31.5%):
+
+  | rerun | acc | loop | wrong->right | right->wrong | net | text differs | loop flips |
+  | --- | --- | --- | --- | --- | --- | --- | --- |
+  | base_rerun | 0.705 | 0.265 | 20 | 11 | +9 | 198 | 38 |
+  | base_rerun2 | 0.680 | 0.285 | 20 | 16 | +4 | 195 | 44 |
+  | base_rerun3 | 0.685 | 0.275 | 17 | 12 | +5 | 198 | 34 |
+  | base_rerun4 | 0.685 | 0.280 | 19 | 14 | +5 | 197 | 41 |
+  | base_rerun5 | 0.695 | 0.270 | 19 | 12 | +7 | 199 | 39 |
+
+  N (largest |net| over the base reruns) = 9, so rule (b') needs the edit's net fixed - broken > 9 (unless
+  edit_rerun's |net| is larger). Original rule (b): > 2 x 31 = 62. Of 200 problems, 97 are correct in all 6 runs,
+  34 wrong in all 6, 69 change grade in at least one. Rerun pairs share identical text on 23 of 2000 answers.
+- OBSERVATION: all 5 normal-kernel reruns score above the batch-invariant base (+2.0 to +4.5 pts; loops -3.0 to
+  -5.0 pts). Five of five in the same direction is unlikely by chance (one-sided sign test p = 1/32), so the
+  batch-invariant kernels may cost ~3 pts on this model. Comparisons stay fair (every arm uses the same kernels),
+  but the write-up should say that absolute numbers are for batch-invariant kernels.
