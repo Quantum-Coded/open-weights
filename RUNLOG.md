@@ -67,3 +67,11 @@ Dated log of every command that matters: runtime and headline output. Becomes th
 - eval_plan.md filled in: token cap 16,384, detector unchanged (pilot false positives 0 of 6 flagged),
   fast track MATH-500 --limit 200, kernel mode, noise-floor procedure and decision rule (confirmed by Dev).
 - Pre-registration commit: ea01b035c4ff76ad8a6116a635b24607d45988aa (eval_plan.md is read-only from here).
+
+## Phase 4: baselines (2026-11-04)
+- Started base / base_pp / base_rerun at 07:32 UTC; stopped by Dev a few minutes in, during the first base
+  batch (no results file written). Dev will say when to start Phase 4. Partial log kept as
+  logs_base_stopped_20261104.txt. Note: that run's log overwrote the earlier logs_base.txt (apply_patch output);
+  its runtime and the HF revision hash are recorded above under Phase 1.
+- Approved by Dev: raise the WSL memory limit to 12 GB in .wslconfig once the baselines finish (needs a WSL
+  restart, so not while a run is going).
