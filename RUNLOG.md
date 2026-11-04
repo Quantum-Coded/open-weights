@@ -88,3 +88,5 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   net gain above 62 problems (+31 pts) if edit_rerun is no smaller. Raised with Dev before the editing run.
 - Runtimes were ~1 h per arm, not the projected ~3 h: early stop ends looping answers and finished answers
   average ~2.4k tokens.
+- WSL memory raised (approved by Dev): C:\Users\Dev Gaglani\.wslconfig created with [wsl2] memory=12GB
+  (host 15.6 GB), wsl --shutdown. Now: Mem 11 GiB total, swap 3.0 GiB; GPU still visible.
