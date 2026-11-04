@@ -75,3 +75,16 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   its runtime and the HF revision hash are recorded above under Phase 1.
 - Approved by Dev: raise the WSL memory limit to 12 GB in .wslconfig once the baselines finish (needs a WSL
   restart, so not while a run is going).
+- Restarted by Dev 10:47 UTC. Fast track, MATH-500 --limit 200, greedy, 16,384 cap, early stop on:
+  - base (batch-invariant, 64m19s): accuracy 0.660, loop_rate 0.315, cap_rate 0.010, mean_tokens_finished 2348.
+  - base_pp (presence penalty 1.5, batch-invariant, 94m16s): accuracy 0.855, loop_rate 0.035, cap_rate 0.060,
+    mean_tokens_finished 3013.
+  - base_rerun (normal kernels, VLLM_BATCH_INVARIANT=0, 50m52s): accuracy 0.705, loop_rate 0.265, cap_rate 0.030,
+    mean_tokens_finished 2503.
+- NOISE FLOOR (base vs base_rerun, analyze.py): accuracy 66.0% -> 70.5% (+4.5 pts, 95% CI [-1.0, +10.0]),
+  McNemar p 0.15; correct->wrong 11, wrong->correct 20 (31 grade flips of 200); loop rate 31.5% -> 26.5%
+  (-5.0 pts, CI [-11.0, +1.0]); loop-flag flips 38; response text differs 198/200.
+  Under the pre-registered rule (net fixed - broken > 2 x the larger rerun flip count) the edit would need a
+  net gain above 62 problems (+31 pts) if edit_rerun is no smaller. Raised with Dev before the editing run.
+- Runtimes were ~1 h per arm, not the projected ~3 h: early stop ends looping answers and finished answers
+  average ~2.4k tokens.
