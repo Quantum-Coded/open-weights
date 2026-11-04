@@ -1,0 +1,10 @@
+torch>=2.4
+vllm
+transformers
+safetensors
+huggingface_hub
+datasets
+numpy
+math-verify[antlr4_13_2]
+pillow
+imageio-ffmpeg

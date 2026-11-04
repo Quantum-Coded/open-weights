@@ -1,0 +1,8 @@
+.venv/
+work/
+*.safetensors
+sealed/
+results/
+editor/data/
+demo/
+__pycache__/
