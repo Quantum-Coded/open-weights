@@ -27,10 +27,21 @@ class Gen:
     first_flag: int | None = None  # token count when the detector first fired
 
 
+def batch_invariant() -> bool:
+    """Kernel mode used for this process (pre-registered: on for every run, off only for the
+    noise-floor reruns, which set VLLM_BATCH_INVARIANT=0)."""
+    import os
+    return bool(int(os.environ.get("VLLM_BATCH_INVARIANT", "1")))
+
+
 def load_llm(model_dir: str, max_len: int, gpu_util: float | None = None):
     # Default 0.80: on the laptop the Windows desktop holds ~1 GB of the 6 GB, so only
     # ~4.95 GiB is free at startup and 0.90 (5.4 GiB) fails. Override with WSP_GPU_UTIL.
     import os
+    # Batch-invariant kernels by default: plain greedy decoding changes with batch composition
+    # (bf16 near-ties), so without this the same command can give different text. Must be set
+    # before vLLM is imported.
+    os.environ["VLLM_BATCH_INVARIANT"] = "1" if batch_invariant() else "0"
     from vllm import LLM
     if gpu_util is None:
         gpu_util = float(os.environ.get("WSP_GPU_UTIL", "0.80"))

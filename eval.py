@@ -4,6 +4,7 @@
   python eval.py --model work/edit --name edit --set math500 --regime greedy
   python eval.py --model work/base --name base_pp --set math500 --regime greedy --presence-penalty 1.5
   python eval.py --model work/base --name pilot --set practice:math_train --limit 20 --no-early-stop
+  VLLM_BATCH_INVARIANT=0 python eval.py ... --name base_rerun   # noise floor: normal kernels
 
 --set is a sealed set name (math500, gsm8k_test400, mmlupro300) or practice:<name>.
 Regimes (pre-registered in eval_plan.md):
@@ -19,7 +20,7 @@ import random
 from pathlib import Path
 
 from common import PRACTICE_DIR, RESULTS_DIR, SEALED_DIR, grade, read_jsonl, write_jsonl
-from gen import free_llm, generate, load_llm
+from gen import batch_invariant, free_llm, generate, load_llm
 
 REGIMES = {"greedy": dict(temperature=0.0, top_p=1.0, n_samples=1),
            "sampled": dict(temperature=0.6, top_p=0.95, n_samples=2)}
@@ -80,7 +81,8 @@ def main():
         fp = [r for r in flagged if r["status"] == "finished" and r["correct"]]
         print(f"detector fired on {len(flagged)}/{len(res)}; of those {len(fp)} finished correctly anyway "
               f"(false-positive rate {len(fp) / max(len(flagged), 1):.1%})")
-    Path(str(out) + ".summary.json").write_text(json.dumps({**s, **vars(a)}, indent=2))
+    Path(str(out) + ".summary.json").write_text(json.dumps(
+        {**s, **vars(a), "batch_invariant": batch_invariant()}, indent=2))
     print(f"wrote {out}")
 
 

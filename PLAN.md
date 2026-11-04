@@ -78,8 +78,8 @@ Each is wired into the phase named below.
 | # | Step | Phase | Output |
 | --- | --- | --- | --- |
 | 1 | Version lock: `pip freeze > requirements.lock.txt`; GPU, driver and CUDA in `RUNLOG.md`. Publish the lock file with the code. | 0 | `requirements.lock.txt`, RUNLOG env block |
-| 2 | Run-to-run noise: rerun the base model on the same 200 MATH-500 problems, greedy, `--name base_rerun`. Pre-registered as the **noise floor**. | 4 | flips (correct↔incorrect) and accuracy difference vs `base` |
-| 3 | Rerun the headline arm: `edit_rerun` on the same 200 problems. | 7 | same flip rate for the edited model |
+| 2 | Run-to-run noise: rerun the base model on the same 200 MATH-500 problems, greedy, normal kernels (`VLLM_BATCH_INVARIANT=0`), `--name base_rerun`. Pre-registered as the **noise floor**. | 4 | flips (correct↔incorrect) and accuracy difference vs `base` |
+| 3 | Rerun the headline arm: `edit_rerun` on the same 200 problems, normal kernels. | 7 | same flip rate for the edited model |
 | 4 | Cross-hardware check (optional, **ask Dev first**): base and edit on 100 of the 200 problems on a free Kaggle GPU, same commands. | 8 | difference from the laptop numbers |
 | 5 | Independent harness cross-check: GSM8K for base and edit through EleutherAI's lm-evaluation-harness. | 8 | agreement in direction and rough size with `eval.py` |
 | 6 | Reproduction kit: `REPRODUCE.md`, fresh machine → headline table, with expected numbers and the noise floor. | 9 | `REPRODUCE.md` |
@@ -92,6 +92,12 @@ to it (e.g. "accuracy 41.0% → 52.5% (+11.5 pts; run-to-run noise ±1.0 pt, 4 f
 batching, prefix caching and bf16 kernels can change the order of floating-point operations, so a
 near-tie between two tokens can flip and the rest of the answer diverges. Steps 2–3 measure how
 often that changes the grade.
+
+**Kernel mode (decided by Dev at Checkpoint A, 4 Nov):** the pilot showed that plain greedy output
+changes with batch composition, and that vLLM's batch-invariant mode makes reruns byte-identical.
+So every run (eval.py and the editor's fp.py, via `gen.load_llm`) uses batch-invariant kernels, and
+the two reruns use normal kernels (`VLLM_BATCH_INVARIANT=0`): they measure how much a numerically
+harmless change to the arithmetic moves the grades, which an exact rerun can no longer show.
 
 ## 7. GitHub
 
@@ -176,8 +182,8 @@ Run in this order, so the fast-track numbers exist first:
 
 1. [ ] `python eval.py --model work/base --name base --set math500 --regime greedy --limit 200`
 2. [ ] `python eval.py --model work/base --name base_pp --set math500 --regime greedy --limit 200 --presence-penalty 1.5`
-3. [ ] Noise floor (§6 step 2), the exact command of run 1 with a new name, in a fresh process:
-       `python eval.py --model work/base --name base_rerun --set math500 --regime greedy --limit 200`
+3. [ ] Noise floor (§6 step 2), the command of run 1 with a new name and normal kernels, in a fresh process:
+       `VLLM_BATCH_INVARIANT=0 python eval.py --model work/base --name base_rerun --set math500 --regime greedy --limit 200`
        then `python analyze.py --base results/base_math500_greedy.jsonl --arm results/base_rerun_math500_greedy.jsonl`.
        Record in `RUNLOG.md`: flips (correct↔incorrect, both directions), accuracy difference, loop-flag
        flips, and how many responses differ in text at all.
@@ -282,7 +288,7 @@ Start when Dev confirms `editor/FINAL_REPORT.md` exists.
 - [ ] Fast-track runs (MATH-500, `--limit 200`, greedy): `edit`, `rand_w`, `rand_s`, then `edit_pp`
       (edit with `--presence-penalty 1.5`).
 - [ ] Headline-arm rerun (§6 step 3), right after the fast-track runs, in a fresh process:
-      `python eval.py --model work/edit --name edit_rerun --set math500 --regime greedy --limit 200`, then
+      `VLLM_BATCH_INVARIANT=0 python eval.py --model work/edit --name edit_rerun --set math500 --regime greedy --limit 200`, then
       `python analyze.py --base results/edit_math500_greedy.jsonl --arm results/edit_rerun_math500_greedy.jsonl`.
       Record the same numbers as `base_rerun` (flips, accuracy difference, loop-flag flips, text changes).
 - [ ] Then the follow-up runs, matching every Phase 4 baseline run with the edited model, plus the

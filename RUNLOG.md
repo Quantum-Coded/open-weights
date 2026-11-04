@@ -57,3 +57,12 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   (Claude -> 28-layer network with the edited layers lit -> output loop/answer), standalone strip GIF (--gif).
   Test renders on practice data only (pilot vs pilot_pp, layers are placeholders): demo/TEST_*.
   Pane text falls back to DejaVu Sans Mono for characters Consolas lacks.
+
+## Phase 3: pre-registration (2026-11-04)
+- Checkpoint A decision (Dev): every run uses vLLM batch-invariant kernels; the noise-floor reruns
+  (base_rerun, edit_rerun) use normal kernels (VLLM_BATCH_INVARIANT=0). PLAN.md §6 and Phases 4/7 updated.
+- gen.load_llm now sets VLLM_BATCH_INVARIANT=1 unless the environment says 0 (covers eval.py and editor fp.py);
+  eval.py writes "batch_invariant" into each summary. Check: bidefault (no env var, 5 practice problems, 4,096
+  cap, 2m43s) is byte-identical to bi5a, 5/5; summary batch_invariant=true.
+- eval_plan.md filled in: token cap 16,384, detector unchanged (pilot false positives 0 of 6 flagged),
+  fast track MATH-500 --limit 200, kernel mode, noise-floor procedure and decision rule (confirmed by Dev).
