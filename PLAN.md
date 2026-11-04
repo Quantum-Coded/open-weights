@@ -45,8 +45,9 @@ https://sabhyachhabria.com/writing/weight-space-negation/
 4. Never pick examples, subsets or thresholds after seeing edited-model results. Use the rules in
    `eval_plan.md`.
 5. Never delete or overwrite a results file. Re-runs get a new `--name`.
-6. Ask Dev before anything outward-facing or hard to undo: `git push`, Hugging Face uploads, deleting
-   files, spending money, installing system packages with sudo.
+6. Ask Dev before anything outward-facing or hard to undo: `git push` (except the standing
+   phase-by-phase pushes to the project repo, §7), Hugging Face uploads, deleting files, spending
+   money, installing system packages with sudo.
 7. Keep `RUNLOG.md` at the repo root: a dated line for every command that matters, its runtime, and
    the headline output. This becomes the methods section.
 8. Commit to git after each phase, with a message saying what changed.
@@ -69,6 +70,37 @@ https://sabhyachhabria.com/writing/weight-space-negation/
 The kit's offline logic was unit-tested on CPU, but the GPU paths (vLLM, `fp.py read`) have **not**
 been run yet. Expect to fix small issues in Phase 1; record each fix in `RUNLOG.md`.
 
+## 6. Reproducibility and stability (added 4 Nov, Dev)
+
+The question a reader will ask is "is this effect bigger than the noise?". These steps answer it.
+Each is wired into the phase named below.
+
+| # | Step | Phase | Output |
+| --- | --- | --- | --- |
+| 1 | Version lock: `pip freeze > requirements.lock.txt`; GPU, driver and CUDA in `RUNLOG.md`. Publish the lock file with the code. | 0 | `requirements.lock.txt`, RUNLOG env block |
+| 2 | Run-to-run noise: rerun the base model on the same 200 MATH-500 problems, greedy, `--name base_rerun`. Pre-registered as the **noise floor**. | 4 | flips (correct↔incorrect) and accuracy difference vs `base` |
+| 3 | Rerun the headline arm: `edit_rerun` on the same 200 problems. | 7 | same flip rate for the edited model |
+| 4 | Cross-hardware check (optional, **ask Dev first**): base and edit on 100 of the 200 problems on a free Kaggle GPU, same commands. | 8 | difference from the laptop numbers |
+| 5 | Independent harness cross-check: GSM8K for base and edit through EleutherAI's lm-evaluation-harness. | 8 | agreement in direction and rough size with `eval.py` |
+| 6 | Reproduction kit: `REPRODUCE.md`, fresh machine → headline table, with expected numbers and the noise floor. | 9 | `REPRODUCE.md` |
+| 7 | Editor stability (follow-up post only, **ask Dev first**): a second independent editing run in a fresh `editor/` copy, same one-line prompt. | follow-up | same layers / direction? similar effect size? |
+
+**Reporting rule:** in the write-up, every headline number is reported with its noise floor next
+to it (e.g. "accuracy 41.0% → 52.5% (+11.5 pts; run-to-run noise ±1.0 pt, 4 flips/200)").
+
+**Why reruns can differ at all:** greedy decoding is deterministic in exact arithmetic, but vLLM's
+batching, prefix caching and bf16 kernels can change the order of floating-point operations, so a
+near-tie between two tokens can flip and the rest of the answer diverges. Steps 2–3 measure how
+often that changes the grade.
+
+## 7. GitHub
+
+Repo: https://github.com/Quantum-Coded/open-weights . Dev's standing instruction (4 Nov): push after
+every phase, so the repo tracks the project phase by phase. Commits and pushes show **only Dev
+(Quantum-Coded)** as author: no co-author trailers and no AI attribution lines. Everything in
+`.gitignore` (`sealed/`, `results/`, `work/`, `editor/data/`, weights) stays out until Phase 9 decides
+what to publish.
+
 ---
 
 ## Phase 0: Environment (target: 4 Nov)
@@ -81,6 +113,8 @@ been run yet. Expect to fix small issues in Phase 1; record each fix in `RUNLOG.
 - [ ] `git init`, add a `.gitignore` for `.venv/`, `work/`, `*.safetensors`, `sealed/`, `results/`,
       `editor/data/`, then commit.
 - [ ] Create `RUNLOG.md` with the environment versions (torch, vllm, transformers, CUDA, driver).
+- [ ] Version lock (§6 step 1): `pip freeze > requirements.lock.txt`, committed and published with the
+      code; GPU model, driver version, CUDA driver version and torch CUDA build recorded in `RUNLOG.md`.
 
 **Done when:** torch sees CUDA and vLLM imports.
 
@@ -128,7 +162,10 @@ Wait for Dev's decision.
   - token cap and detector thresholds, plus the pilot false-positive rate;
   - **fast-track set: MATH-500, fixed 200-problem subset = `eval.py --limit 200`** (seed 0, so it is
     the same 200 for every arm); full sets for the follow-up;
-  - arms, statistics and the example-selection rule as written in the template.
+  - arms, statistics and the example-selection rule as written in the template;
+  - the **noise-floor** procedure and decision rule (§6 step 2; the template's "Noise floor"
+    section). The value itself is measured in Phase 4 and recorded in `RUNLOG.md`; the plan is
+    not edited after commit.
 - [ ] `git commit -m "pre-registration"` and record the commit hash in `RUNLOG.md`.
 
 **Done when:** the plan is committed. From here on it is read-only.
@@ -139,7 +176,12 @@ Run in this order, so the fast-track numbers exist first:
 
 1. [ ] `python eval.py --model work/base --name base --set math500 --regime greedy --limit 200`
 2. [ ] `python eval.py --model work/base --name base_pp --set math500 --regime greedy --limit 200 --presence-penalty 1.5`
-3. [ ] Full sets, for the follow-up post (can keep running during Phase 5 only if they don't share the GPU with the editor; otherwise run them after freeze):
+3. [ ] Noise floor (§6 step 2), the exact command of run 1 with a new name, in a fresh process:
+       `python eval.py --model work/base --name base_rerun --set math500 --regime greedy --limit 200`
+       then `python analyze.py --base results/base_math500_greedy.jsonl --arm results/base_rerun_math500_greedy.jsonl`.
+       Record in `RUNLOG.md`: flips (correct↔incorrect, both directions), accuracy difference, loop-flag
+       flips, and how many responses differ in text at all.
+4. [ ] Full sets, for the follow-up post (can keep running during Phase 5 only if they don't share the GPU with the editor; otherwise run them after freeze):
    - [ ] `--set math500 --regime greedy` (all 500), name `base_full`
    - [ ] `--set gsm8k_test400 --regime greedy`
    - [ ] `--set mmlupro300 --regime greedy`
@@ -226,6 +268,10 @@ Start when Dev confirms `editor/FINAL_REPORT.md` exists.
   ```
 - [ ] Fast-track runs (MATH-500, `--limit 200`, greedy): `edit`, `rand_w`, `rand_s`, then `edit_pp`
       (edit with `--presence-penalty 1.5`).
+- [ ] Headline-arm rerun (§6 step 3), right after the fast-track runs, in a fresh process:
+      `python eval.py --model work/edit --name edit_rerun --set math500 --regime greedy --limit 200`, then
+      `python analyze.py --base results/edit_math500_greedy.jsonl --arm results/edit_rerun_math500_greedy.jsonl`.
+      Record the same numbers as `base_rerun` (flips, accuracy difference, loop-flag flips, text changes).
 - [ ] Then the follow-up runs, matching every Phase 4 baseline run with the edited model, plus the
       exploratory `--scale 0.5` and `1.5` arms.
 
@@ -250,6 +296,21 @@ Start when Dev confirms `editor/FINAL_REPORT.md` exists.
       very long; `make_demo_video.py` prints a `weak:` warning), also render the next one the rule
       picks and show Dev both.
 - [ ] Write a plain-language summary of what the editor found, from `FINAL_REPORT.md` and its notebook.
+- [ ] Noise check against the headline: put the edit-vs-base effect next to both noise floors
+      (`base_rerun`, `edit_rerun`) and apply the pre-registered noise-floor rule from `eval_plan.md`.
+- [ ] Independent harness cross-check (§6 step 5): GSM8K for `work/base` and `work/edit` through
+      EleutherAI's lm-evaluation-harness, vLLM backend (`pip install lm-eval[vllm]`, version pinned in
+      the lock file), `--apply_chat_template` with the model's own chat template, greedy,
+      `max_gen_toks` = our token cap, and everything up to and including `</think>` stripped before
+      answer extraction (the harness's reasoning-stripping option if the pinned version has one,
+      otherwise a regex filter in a small custom task YAML committed to the repo). Report whether its
+      accuracy change agrees in direction and rough size with `eval.py`'s on `gsm8k_test400`, and list
+      every setting difference (e.g. the harness's own prompt and answer regex, full 1,319-problem test
+      split vs our 400 subset, no early loop stop, its own extraction instead of `\boxed{}`).
+- [ ] Cross-hardware check (§6 step 4, optional, **ask Dev first**): base and edit on the first 100
+      (by id) of the 200 fast-track problems on a free Kaggle GPU, same commands, same lock file
+      where the GPU allows. Report per arm the accuracy and loop-rate difference from the laptop
+      numbers on the same 100, and the per-problem flips; note the GPU model and driver.
 
 **CHECKPOINT C (report to Dev):** the headline table, audits, figures, video, and the honest one-line
 result. Include a clear verdict: does the edit beat both random controls, and by how much (with CI)?
@@ -261,9 +322,24 @@ If not, say so plainly and draft the negative-result framing.
       the results table, base-model link, method, credits and limitations. Ask before uploading.
 - [ ] HF Space from `space/app.py`, if Dev wants a live demo (a free CPU Space is slow; note that, or
       use ZeroGPU if available).
-- [ ] GitHub repo: code, `eval_plan.md` (with its commit date), `RUNLOG.md`, editor logs, raw
-      generations. Ask before pushing.
+- [ ] GitHub repo (https://github.com/Quantum-Coded/open-weights, pushed after every phase, see §7):
+      code, `requirements.lock.txt`, `eval_plan.md` (with its commit date), `RUNLOG.md`. Editor logs and
+      raw generations are added only after freeze, and only with Dev's OK on what goes public.
+- [ ] `REPRODUCE.md` (§6 step 6): exact commands from a fresh machine (WSL2/Linux + NVIDIA GPU, Python
+      3.12, `pip install -r requirements.lock.txt`) to the headline table: data prep, model revision
+      hash, patch download and sha256 check, `apply_patch.py`, the five fast-track `eval.py` runs and
+      `analyze.py`. Include the expected numbers and the noise floor (`base_rerun`/`edit_rerun` flips
+      and accuracy difference), and say plainly what counts as "same result": within the measured
+      noise floor, not bit-identical text.
 - [ ] Finish `WRITEUP.md` and draft the LinkedIn post (below). **Dev posts it, not you.**
+
+## Follow-up (after the fast-track post)
+
+- [ ] Editor stability (§6 step 7, **ask Dev first**): a second, independent editing run in a fresh copy
+      of `editor/` (clean `state.json`, empty `logs/` and `edits/`, no access to run 1's notebook or
+      patch), same one-line prompt, same seal procedure. Evaluate it with the same commands as a new arm
+      (`edit2`). Report whether it finds the same layers or direction (overlap of changed tensors; cosine
+      between the two edits' main directions if both are rank-few) and a similar effect size.
 
 ---
 
@@ -276,7 +352,11 @@ If not, say so plainly and draft the negative-result framing.
 5. Results, baselines, side effects.
 6. Methodology: pre-registration, sealed sets, paired stats, controls, audits.
 7. Caveats: one editing run, one model, automatic graders, detector precision, fast-track subset.
-8. Credits, links, how to reproduce.
+8. Credits, links, how to reproduce (`REPRODUCE.md`).
+
+Every headline number is reported with its noise floor next to it (§6), e.g.
+"accuracy 41.0% → 52.5% (+11.5 pts [95% CI …]; run-to-run noise: 4/200 flips, ±1.0 pt)".
+Section 6 also reports the lm-eval-harness cross-check and, if run, the Kaggle cross-hardware numbers.
 
 ## LinkedIn post shape (fill with real numbers, keep it honest)
 

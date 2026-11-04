@@ -40,6 +40,22 @@ The commit date is your proof that the plan came first. Anything not listed here
 Paired by problem. Exact McNemar (greedy) or sign-flip permutation (sampled) p-values.
 95% bootstrap CIs, 10,000 resamples of problems. alpha = 0.05 after Holm.
 
+## Noise floor (run-to-run, measured before editing)
+- Procedure: rerun the base model on the same 200 MATH-500 problems, greedy, identical command,
+  fresh process, `--name base_rerun`. After the edit eval, the same for the edited model (`edit_rerun`).
+- Reported: problems whose correct/incorrect status flips (both directions), accuracy difference,
+  loop-flag flips, number of responses whose text differs.
+- Decision rule (proposed, confirmed by Dev at commit: ______): an edit effect counts as clearly above
+  the noise floor only if (a) it passes the primary test above, and (b) its net fixed − broken count
+  exceeds 2 × the larger flip count of `base_rerun` and `edit_rerun`.
+- Every headline number in the write-up is reported with this noise floor next to it.
+- Measured values are recorded in RUNLOG.md (Phase 4 / Phase 7); this file is not edited after commit.
+
+## Cross-checks (secondary, not part of the primary comparisons)
+- lm-evaluation-harness, GSM8K, base vs edit (vLLM backend, model chat template, reasoning stripped
+  up to `</think>`, max tokens = token cap). Reported: agreement in direction and rough size with eval.py.
+- Optional: Kaggle GPU, base and edit on the first 100 (by id) of the 200 fast-track problems.
+
 ## Example selection rule
 For each MATH subject, the lowest-index problem the edit fixed. No other picking.
 

@@ -6,3 +6,4 @@ results/
 editor/data/
 demo/
 __pycache__/
+logs_*.txt
