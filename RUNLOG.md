@@ -123,3 +123,40 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   at once on >= 10 GB GPUs, in turn on the 4050. Own venv space/.venv (gradio 6.31.0 pins pillow < 13, so it stays
   out of the main venv). UI build checked; generation untested until the edited model exists. Not deployed.
 - WRITEUP.md draft: baselines and noise floor filled in, edit numbers TBD.
+
+## Phase 4 item 4: full base sets overnight (2026-11-04/05, batch-invariant kernels, night.sh)
+- 2026-11-04 18:31-18:59 UTC (28 min) base gsm8k_test400 greedy: acc 0.740, loops 0.205, cap 0.000,
+  mean tokens (finished) 1,223.
+- 2026-11-04 18:59-20:19 UTC (81 min) base mmlupro300 greedy: acc 0.143, loops 0.557, cap 0.010, mean tokens 1,332.
+- 2026-11-04 20:19-23:13 UTC (173 min) base_full math500 greedy (all 500): acc 0.700, loops 0.244, cap 0.030,
+  mean tokens 2,631.
+- 2026-11-04 23:13 - 2026-11-05 02:56 UTC (224 min) base math500 sampled (200 problems x 2 samples, T 0.6,
+  top-p 0.95; started before the 01:00 UTC no-new-run cutoff): acc 0.820 over 400 answers, loops 0.010,
+  cap 0.065, mean tokens (finished) 3,852. Sampled answers rarely repeat verbatim but run much longer.
+- Nothing deferred: all four night runs finished (NIGHT DONE 02:56 UTC).
+- MMLU-Pro check (operator, base model only, no grading change): of 300 answers 167 looped; of the 133 that
+  finished, 55 put the letter in \boxed{} (43 right), 72 wrote "Answer: X" without a box (18 of those right),
+  3 never closed </think>, 3 other. The pre-registered grader (common.grade, letter inside \boxed{}) stays as is
+  and applies to every arm the same way. A lenient reading would give 61/300 = 0.203 instead of 0.143; any
+  such secondary number would be labelled post hoc and computed for every arm, only if Dev asks for it.
+
+## Checkpoint B decisions (2026-11-05 ~08:10 IST, Dev, in chat)
+- Dev: "my only directive is to modify the open weights without training to produce a significant
+  improvement, all other decisions are up to you"; Dev away until 20:00 IST.
+- Dev logs in to Claude Code in WSL; the operator then starts the editor session itself (instead of Dev typing
+  the prompt): an interactive `claude` session in a tmux window, cwd ~/wsp-r1/editor, --permission-mode auto
+  (Dev's choice), first message verbatim "Make this model better at math by editing its weights directly. You
+  may not train it." The only other message the operator may send is the plan's "Continue from your
+  notebook." (new session after a usage limit or a dead session). Every message sent is logged here.
+- Second editing run: Dev allows at most one more fresh run (same prompt, budget reset) if run 1 does not
+  beat the noise floor and the random controls; both runs are reported, neither is picked over the other.
+
+## Pre-handoff smoke test (2026-11-05 02:57-03:00 UTC, operator; state and logs reset afterwards)
+- `fp.py generate --source math_train --n 2 --seed 0 --max-tokens 1024`: 1m52s, 1/2 correct (1 finished at 725
+  tokens, 1 hit the 1,024 cap). `fp.py read --layers 10,15 --module resid --positions last:8`: 36 s, (2, 8, 1536)
+  per layer, no NaN. `fp.py read --layers 15 --module mlp_act --positions mean --chat`: 20 s, (2, 1, 8960). So
+  `fp.py read` works as written; no fix needed.
+- `wsp.load_base()`: 339 tensors, 1,777,088,000 params, 13-20 s. After loading: 7.2 GB anonymous RAM
+  (RssAnon); the 10.9 GB peak RSS includes the memory-mapped safetensors pages, which the kernel can drop.
+  WSL has 11 GiB visible (editor/CLAUDE.md says 16 GB RAM: the host's figure). A one-tensor-at-a-time variant of
+  load_base gave the same numbers, so wsp.py was restored to its committed version (no change).
