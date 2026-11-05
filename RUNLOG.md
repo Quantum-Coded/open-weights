@@ -160,3 +160,22 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   (RssAnon); the 10.9 GB peak RSS includes the memory-mapped safetensors pages, which the kernel can drop.
   WSL has 11 GiB visible (editor/CLAUDE.md says 16 GB RAM: the host's figure). A one-tensor-at-a-time variant of
   load_base gave the same numbers, so wsp.py was restored to its committed version (no change).
+
+## Phase 5: seal and hand off (2026-11-05 03:05-03:40 UTC)
+- Editor reset: state.json = {"budget": 50, "used": 0, "passes": []}; editor/logs and editor/edits emptied
+  (.keep kept); work/fp_current removed. `mv sealed results ~/wsp_sealed/`. Commit c547592 "sealed; editor ready".
+- Leak check found test/practice overlap (before the editor started): 0 MATH-500 or GSM8K questions are exact
+  duplicates of practice problems, but 2 MMLU-Pro questions are word-for-word MATH-train problems (MMLU-Pro
+  includes MATH-derived items) and 44 test questions have a near-twin in MATH train (same problem, one number
+  changed; MATH's train/test split shares templates). Fixed rule, chosen before any edit and applied once:
+  drop every practice problem that shares its first 40 normalized characters with a sealed question and either
+  has difflib ratio >= 0.80 with it or shares its first 60 normalized characters. Result: math_train.jsonl
+  7,498 -> 7,416 (82 removed, matching 52 test questions), gsm8k_train.jsonl 7,473 unchanged. sha256 prefixes
+  after: math_train 5cd02994a542a854, gsm8k_train 28cb0e9243ac55bc. Originals in ~/wsp_sealed/practice_orig/,
+  the removed list (with the test ids each matched) in ~/wsp_sealed/practice_removed.json (published after
+  freeze). The app's two example problems are still in the practice set.
+- Re-check over all 1,200 sealed questions (whitespace-normalized): exact 0, same first 60 characters 0,
+  >= 0.80 similar 0. PLAN's grep (first 60 characters of 20 random MATH-500 questions, random.Random(0)) shows
+  3 "hits", all false positives: those 60 characters contain a newline, so grep -F treats each line as its own
+  pattern (e.g. "Given"); the flattened and the JSON-escaped strings have no hits.
+- editor/data/practice/ holds only math_train.jsonl and gsm8k_train.jsonl.
