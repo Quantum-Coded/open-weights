@@ -221,3 +221,4 @@ Dated log of every command that matters: runtime and headline output. Becomes th
 - Built gsm8k_fresh400 (0 skipped as practice-contaminated) and mmlupro_fresh300 (4 skipped) with
   make_fresh.py. They are written to sealed/ and are gitignored. sha256 values are in eval_plan_amendment2.md.
 - No model had been run on them when eval_plan_amendment2.md was committed (next line has the commit).
+- Amendment 2 commit: d1290be (2026-11-05T13:02:47+00:00).
