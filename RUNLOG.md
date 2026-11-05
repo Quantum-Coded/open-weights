@@ -225,3 +225,12 @@ Dated log of every command that matters: runtime and headline output. Becomes th
 - 2026-11-05 18:51 IST: edit_rerun (edit, normal kernels), MATH-500 greedy --limit 200: 46m56s. acc 0.715, loop 0.240, cap 0.025. vs edit: -0.5 [-5.5, +4.5], 12 wrong->right / 13 right->wrong (net -1, 25 flips). N = max(9, 1) = 9 (unchanged). Original rule (b) threshold = 2 x max(31, 13) = 62.
 - Run 1 MATH-500 verdict (pre-registered rules): (a) primary test NOT passed (edit vs base raw McNemar p 0.058 > 0.05 before Holm; edit vs rand_w p 0.38). (b') net +12 > N = 9: passed. (b) original rule net +12 < 62: not passed. So the MATH effect is NOT "clearly above the noise floor" under either rule, because (a) fails. Loop-rate and GSM8K primary comparisons are evaluated when the GSM8K follow-up lands.
 - 18:51 IST: FASTTRACK DONE; follow-ups started (edit on gsm8k_test400 first).
+- 2026-11-05 19:17 IST: edit on gsm8k_test400, greedy: acc 0.7975 (base 0.740), loop 0.1275 (base 0.205), cap 0. vs base: +5.8 [+1.8, +9.8], 45 fixed / 22 broken, McNemar p 0.0067.
+- Pre-registered primary family (eval_plan.md, Holm over 4; primary_run1.py):
+  | Test | n | fixed/broken (or loops added/removed) | p raw | p Holm | |
+  |---|---|---|---|---|---|
+  | MATH-500 acc, edit vs base | 200 | 23 / 11 | 0.058 | 0.12 | fail |
+  | MATH-500 loop rate, edit vs base | 200 | 11 added / 33 removed | 0.0013 | 0.005 | PASS |
+  | GSM8K acc, edit vs base | 400 | 45 / 22 | 0.0067 | 0.020 | PASS |
+  | MATH-500 acc, edit vs rand_w | 200 | 19 / 13 | 0.38 | 0.38 | fail |
+- Run 1 summary: the edit significantly improves GSM8K accuracy (+5.8 pts) and cuts MATH-500 loops (31.5% -> 20.5%); its MATH-500 accuracy gain (+6.0) is not significant and not distinguishable from the same-weights random control. Run 2 stays triggered (rule: run 1 must beat the noise floor AND the random controls).
