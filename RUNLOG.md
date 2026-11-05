@@ -250,3 +250,4 @@ Dated log of every command that matters: runtime and headline output. Becomes th
 - Built mmlupro_fresh2_300 (sealed test) and a3_practice_mmlupro128 (practice) with make_a3_data.py (13 near-duplicates skipped). sha256 values are in eval_plan_amendment3.md. Both are in sealed/ (gitignored).
 - a3_build.py: run 1's steer.py + make_h4.py with nothing changed except the transcripts. a3_selftest.py: fed run 1's direction, it reproduces run 1's frozen patch exactly (0 of 1,280 values differ).
 - No model has been run on either new set at commit time. Queue: fresh.sh (Amendment 2) -> a3.sh -> editing run 2.
+- Amendment 3 commit: 396f2db (2026-11-05T19:00:21+00:00).
