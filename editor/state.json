@@ -1,1 +1,564 @@
-{"budget": 50, "used": 0, "passes": []}
+{
+  "budget": 50,
+  "used": 38,
+  "passes": [
+    {
+      "k": 1,
+      "kind": "generate",
+      "time": "2026-11-05 03:09:00",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 7,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 2,
+      "kind": "generate",
+      "time": "2026-11-05 03:20:35",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 7,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 3,
+      "kind": "read",
+      "time": "2026-11-05 03:26:04",
+      "args": {
+        "cmd": "read",
+        "texts": "work/read1_texts.json",
+        "layers": "14,27",
+        "module": "resid",
+        "positions": "last:1024",
+        "chat": false
+      }
+    },
+    {
+      "k": 4,
+      "kind": "generate",
+      "time": "2026-11-05 03:39:38",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 7,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 5,
+      "kind": "generate",
+      "time": "2026-11-05 03:48:53",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 7,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 6,
+      "kind": "generate",
+      "time": "2026-11-05 03:54:57",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 7,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 7,
+      "kind": "generate",
+      "time": "2026-11-05 04:04:26",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 7,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 8,
+      "kind": "generate",
+      "time": "2026-11-05 04:11:10",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 11,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 9,
+      "kind": "generate",
+      "time": "2026-11-05 04:20:59",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 11,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 10,
+      "kind": "generate",
+      "time": "2026-11-05 04:25:52",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 13,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 11,
+      "kind": "generate",
+      "time": "2026-11-05 04:34:36",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 13,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 12,
+      "kind": "read",
+      "time": "2026-11-05 04:39:17",
+      "args": {
+        "cmd": "read",
+        "texts": "work/read3_0_texts.json",
+        "layers": "27",
+        "module": "resid",
+        "positions": "last:1024",
+        "chat": false
+      }
+    },
+    {
+      "k": 13,
+      "kind": "read",
+      "time": "2026-11-05 04:42:39",
+      "args": {
+        "cmd": "read",
+        "texts": "work/read3_1_texts.json",
+        "layers": "27",
+        "module": "resid",
+        "positions": "last:1024",
+        "chat": false
+      }
+    },
+    {
+      "k": 14,
+      "kind": "generate",
+      "time": "2026-11-05 04:54:21",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 21,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 15,
+      "kind": "generate",
+      "time": "2026-11-05 05:07:10",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 21,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 16,
+      "kind": "generate",
+      "time": "2026-11-05 05:10:49",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 21,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 17,
+      "kind": "generate",
+      "time": "2026-11-05 05:22:59",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 21,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 18,
+      "kind": "read",
+      "time": "2026-11-05 05:54:36",
+      "args": {
+        "cmd": "read",
+        "texts": "work/read4_texts.json",
+        "layers": "27",
+        "module": "resid",
+        "positions": "last:1024",
+        "chat": false
+      }
+    },
+    {
+      "k": 19,
+      "kind": "generate",
+      "time": "2026-11-05 05:59:38",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 21,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 20,
+      "kind": "generate",
+      "time": "2026-11-05 06:11:14",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 21,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 21,
+      "kind": "generate",
+      "time": "2026-11-05 06:16:40",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 11,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 22,
+      "kind": "generate",
+      "time": "2026-11-05 06:25:29",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 11,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 23,
+      "kind": "generate",
+      "time": "2026-11-05 06:29:35",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 13,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 24,
+      "kind": "generate",
+      "time": "2026-11-05 06:36:24",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 13,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 25,
+      "kind": "read",
+      "time": "2026-11-05 06:42:21",
+      "args": {
+        "cmd": "read",
+        "texts": "work/read5_0_texts.json",
+        "layers": "14",
+        "module": "resid",
+        "positions": "last:1024",
+        "chat": false
+      }
+    },
+    {
+      "k": 26,
+      "kind": "read",
+      "time": "2026-11-05 06:44:31",
+      "args": {
+        "cmd": "read",
+        "texts": "work/read5_1_texts.json",
+        "layers": "14",
+        "module": "resid",
+        "positions": "last:1024",
+        "chat": false
+      }
+    },
+    {
+      "k": 27,
+      "kind": "generate",
+      "time": "2026-11-05 06:46:34",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 31,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 28,
+      "kind": "generate",
+      "time": "2026-11-05 06:52:35",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 31,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 29,
+      "kind": "generate",
+      "time": "2026-11-05 06:57:02",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 31,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 30,
+      "kind": "generate",
+      "time": "2026-11-05 07:03:58",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 31,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 31,
+      "kind": "generate",
+      "time": "2026-11-05 07:07:15",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 21,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 32,
+      "kind": "generate",
+      "time": "2026-11-05 07:19:58",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 21,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 33,
+      "kind": "generate",
+      "time": "2026-11-05 07:22:48",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 31,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 34,
+      "kind": "generate",
+      "time": "2026-11-05 07:30:48",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 31,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 35,
+      "kind": "generate",
+      "time": "2026-11-05 07:35:00",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 41,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 36,
+      "kind": "generate",
+      "time": "2026-11-05 07:37:24",
+      "args": {
+        "cmd": "generate",
+        "source": "math_train",
+        "n": 32,
+        "seed": 41,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 37,
+      "kind": "generate",
+      "time": "2026-11-05 07:45:01",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 41,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    },
+    {
+      "k": 38,
+      "kind": "generate",
+      "time": "2026-11-05 07:50:06",
+      "args": {
+        "cmd": "generate",
+        "source": "gsm8k_train",
+        "n": 32,
+        "seed": 41,
+        "ids": null,
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "no_early_stop": false
+      }
+    }
+  ]
+}

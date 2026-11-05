@@ -1,0 +1,12 @@
+model: base + patch (0 weights changed)
+pass 25/50: read 237 texts, layers [14], resid, array shape (237, 1024, 1536) per layer -> /home/dev_gaglani/wsp-r1/editor/logs/fp/pass_25.npz
+model: base + patch (0 weights changed)
+pass 26/50: read 237 texts, layers [14], resid, array shape (237, 1024, 1536) per layer -> /home/dev_gaglani/wsp-r1/editor/logs/fp/pass_26.npz
+model: base + patch (0 weights changed)
+pass 27/50: 32 problems | accuracy 28/32 | loop 1 | cap 3 | finished 28
+model: base + patch (0 weights changed)
+pass 28/50: 32 problems | accuracy 23/32 | loop 7 | cap 0 | finished 25
+model: base + patch (1,278 weights changed)
+pass 29/50: 32 problems | accuracy 26/32 | loop 3 | cap 4 | finished 26
+model: base + patch (1,278 weights changed)
+pass 30/50: 32 problems | accuracy 30/32 | loop 1 | cap 0 | finished 31

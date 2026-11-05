@@ -7,3 +7,4 @@ editor/data/
 demo/
 __pycache__/
 logs_*.txt
+editor/logs/fp/

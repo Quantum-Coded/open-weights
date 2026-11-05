@@ -1,0 +1,6 @@
+model: base + patch (0 weights changed)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Traceback (most recent call last):
+    raise ValueError(
+ValueError: The decoder prompt (length 9216) plus the number of requested output tokens (at least 1) is longer than the maximum model length of 9216. Make sure that `max_model_len` is no smaller than the number of text tokens (prompt + requested output tokens).
+model: base + patch (0 weights changed)
+pass 37/50: 32 problems | accuracy 21/32 | loop 9 | cap 0 | finished 23

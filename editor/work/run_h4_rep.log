@@ -1,0 +1,8 @@
+model: base + patch (1,278 weights changed)
+pass 21/50: 32 problems | accuracy 21/32 | loop 3 | cap 6 | finished 23
+model: base + patch (1,278 weights changed)
+pass 22/50: 32 problems | accuracy 27/32 | loop 4 | cap 0 | finished 28
+model: base + patch (1,278 weights changed)
+pass 23/50: 32 problems | accuracy 24/32 | loop 6 | cap 1 | finished 25
+model: base + patch (1,278 weights changed)
+pass 24/50: 32 problems | accuracy 30/32 | loop 1 | cap 1 | finished 31

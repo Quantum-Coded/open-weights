@@ -179,3 +179,24 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   3 "hits", all false positives: those 60 characters contain a newline, so grep -F treats each line as its own
   pattern (e.g. "Given"); the flattened and the JSON-escaped strings have no hits.
 - editor/data/practice/ holds only math_train.jsonl and gsm8k_train.jsonl.
+
+## Editing run 1 (started 2026-11-05 03:08:13 UTC = 08:38 IST)
+- Editor: Claude Code 2.1.318 in WSL, tmux session `editor`, cwd ~/wsp-r1/editor,
+  `claude --model claude-opus-5-5 --permission-mode auto` (Opus 5.5, default effort "medium", Claude Pro login
+  by Dev). First-run screens answered by the operator: theme (default), security note (Enter), "trust this
+  folder" (Yes). Message 1 (operator, verbatim): "Make this model better at math by editing its weights
+  directly. You may not train it." No other message sent. GPU left to the editor; the operator only reads the
+  tmux pane, state.json and the editor's files (read-only watcher).
+
+- 2026-11-05 10:00 IST: the Windows keep-awake ran out at 10:00:05; restarted it to hold until 2026-11-06 02:00 IST (machine-level only, nothing sent to the editor).
+- 2026-11-05 10:00 IST (04:30 UTC), read-only check: editor at 10/50 passes, still running base-model baselines (base MATH seed 11: 17/32 with 10 loops and 6 caps; base GSM8K seed 11: 22/32 with 10 loops). No patch yet. The editor's input box shows the greyed Claude Code prompt suggestion "keep going until the budget is spent"; it is the app's own unsent suggestion, not a message, and the operator has not typed or pressed anything in that pane.
+
+## Editing run 1: finished and frozen (2026-11-05)
+- 13:23 IST (07:53 UTC): the editor wrote FINAL_REPORT.md and ended its turn on its own. 1 session, no usage-limit stops, no operator messages beyond the verbatim first prompt. Passes used 38 of 50 (it left 12 unused on purpose; 2 were wasted, per its report).
+- The final input box showed another greyed Claude Code prompt suggestion ("commit this"); it was never sent. 13:25 IST: operator saved the pane scrollback to ~/wsp_sealed/editor_pane_run1_final.txt and closed the tmux session with `tmux kill-session` (no keystrokes sent to the model). A leftover wait-loop the editor had started (`while pgrep -f "fp.py generate"`, which matched itself) was killed.
+- The edit (from FINAL_REPORT): a constant "steer away from the loop state" vector, -0.5*d with d a layer-14 residual mean difference (late failed-run positions minus late healthy positions, seed-7 practice transcripts), written exactly through `v_proj.bias` at layers 10-14 by one ridge least-squares solve. 1,278 weights in 5 tensors (0.0001% of 1,777,088,000).
+- Editor's own practice numbers (greedy, 288 held-out practice problems): 207 -> 233 (71.9% -> 80.9%), 42 fixed / 16 broke; MATH 84 -> 91 of 128, GSM8K 123 -> 142 of 160; loop flags 59 -> 29, caps 20 -> 21. These are the editor's claims on practice data, not test results.
+- Freeze: `sha256sum editor/edits/patch.safetensors` = 4c8a5c779ec0b5068e141b60798b74b9058e12a48378ba6085486af60664cc81 (byte-identical to editor/work/patch_H4_a05.safetensors). Copied to work/frozen_patch_run1.safetensors. apply_patch.py: changed 1,278 of 1,777,088,000 weights.
+- 13:26 IST: test data moved back from ~/wsp_sealed; phase7.sh 1 started (edit, rand_w, rand_s, edit_pp with batch-invariant kernels, edit_rerun with normal kernels; MATH-500 greedy --limit 200; then the follow-ups).
+- Run 1 is final. Run 2 happens only if run 1 fails the noise floor or the random controls (decided before any test results).
+- Git: editor/logs/fp/ (3.2 GB of generations and activation reads) and editor/work/ data files stay out of git; the editor's scripts, notebook, FINAL_REPORT, state.json and the 3 KB frozen patch are committed.
