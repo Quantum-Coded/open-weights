@@ -222,3 +222,6 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   make_fresh.py. They are written to sealed/ and are gitignored. sha256 values are in eval_plan_amendment2.md.
 - No model had been run on them when eval_plan_amendment2.md was committed (next line has the commit).
 - Amendment 2 commit: d1290be (2026-11-05T13:02:47+00:00).
+- 2026-11-05 18:51 IST: edit_rerun (edit, normal kernels), MATH-500 greedy --limit 200: 46m56s. acc 0.715, loop 0.240, cap 0.025. vs edit: -0.5 [-5.5, +4.5], 12 wrong->right / 13 right->wrong (net -1, 25 flips). N = max(9, 1) = 9 (unchanged). Original rule (b) threshold = 2 x max(31, 13) = 62.
+- Run 1 MATH-500 verdict (pre-registered rules): (a) primary test NOT passed (edit vs base raw McNemar p 0.058 > 0.05 before Holm; edit vs rand_w p 0.38). (b') net +12 > N = 9: passed. (b) original rule net +12 < 62: not passed. So the MATH effect is NOT "clearly above the noise floor" under either rule, because (a) fails. Loop-rate and GSM8K primary comparisons are evaluated when the GSM8K follow-up lands.
+- 18:51 IST: FASTTRACK DONE; follow-ups started (edit on gsm8k_test400 first).
