@@ -244,3 +244,9 @@ Dated log of every command that matters: runtime and headline output. Becomes th
 - Rendered demo/m500-75.mp4 (30 s), demo/m500-75_explainer.mp4 (60 s), demo/m500-75_strip.gif. Two fixes to make_demo_video.py first: the percentage is printed in plain decimals (it showed "7.2E-05%"), and the caption groups tensors by type ("self_attn.v_proj.bias (1,278 weights)") so it no longer runs under the layer label.
 - figures/fig1_accuracy_loops.png and fig3_fixed_broken.png drawn for the fast track (the net labels in fig3 moved right so they no longer touch the bars). fig2 (projection) needs a GPU read pass; it is pending.
 - WRITEUP.md: run 1 numbers filled in (TL;DR, what Claude found, results, methodology, caveats).
+
+## Amendment 3: run-1 technique on MMLU-Pro loops (2026-11-06 ~00:40 IST)
+- Dev saw an MIT Weight-Space Programming post (Qwen3.5-0.8B, unfinished/looping reasoning, 7.9% -> 48.1%) and asked for an equally strong, honest result ("proceed with both tracks").
+- Built mmlupro_fresh2_300 (sealed test) and a3_practice_mmlupro128 (practice) with make_a3_data.py (13 near-duplicates skipped). sha256 values are in eval_plan_amendment3.md. Both are in sealed/ (gitignored).
+- a3_build.py: run 1's steer.py + make_h4.py with nothing changed except the transcripts. a3_selftest.py: fed run 1's direction, it reproduces run 1's frozen patch exactly (0 of 1,280 values differ).
+- No model has been run on either new set at commit time. Queue: fresh.sh (Amendment 2) -> a3.sh -> editing run 2.
