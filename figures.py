@@ -158,10 +158,10 @@ def fig_fixed_broken(base: str, arms: list[tuple[str, str]], reruns: list[str], 
         ax.text(fixed + span * 0.02, yy, f"+{fixed}", va="center", fontsize=16, fontweight="bold")
         ax.text(-broken - span * 0.02, yy, f"−{broken}", va="center", ha="right", fontsize=16,
                 fontweight="bold", color=RED)
-        ax.text(span * 1.32, yy, f"net {fixed - broken:+d}", va="center", ha="right", fontsize=16,
+        ax.text(span * 1.58, yy, f"net {fixed - broken:+d}", va="center", ha="right", fontsize=16,
                 fontfamily="Consolas", fontweight="bold")
     ax.axvline(0, color=INK, lw=2.5)
-    ax.set_xlim(-span * 1.3, span * 1.35)
+    ax.set_xlim(-span * 1.3, span * 1.62)
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([wrap(r[0]) for r in rows][::-1], fontsize=16)
     ax.set_xlabel("← broken (right → wrong)          fixed (wrong → right) →", fontsize=14)

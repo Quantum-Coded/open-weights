@@ -359,10 +359,15 @@ def edited_layers(patch_info: dict | None) -> tuple[list[int], list[str]]:
         return [], []
     per = patch_info["per_tensor"]
     layers = sorted({int(m.group(1)) for k in per if (m := re.search(r"layers\.(\d+)\.", k))})
-    desc = []
-    for k, n in sorted(per.items(), key=lambda kv: -kv[1])[:2]:
-        short = re.sub(r"^model\.", "", k).replace("layers.", "L").replace(".weight", "")
-        desc.append(f"{short} ({n:,} weights)")
+    # group tensors by their name without the layer index, e.g. "self_attn.v_proj.bias" x 5 layers;
+    # the layer numbers are already drawn above the network, so the caption names only the tensor type
+    groups: dict[str, int] = {}
+    for k, n in per.items():
+        if not n:
+            continue
+        suffix = re.sub(r"^model\.(layers\.\d+\.)?", "", k).replace(".weight", "")
+        groups[suffix] = groups.get(suffix, 0) + n
+    desc = [f"{s} ({n:,} weights)" for s, n in sorted(groups.items(), key=lambda kv: -kv[1])[:2]]
     return layers, desc
 
 
@@ -953,7 +958,11 @@ def explainer_cards(r: Renderer, a, pct: str) -> dict:
 
 # ----------------------------------------------------------------------------- main
 def fmt_pct(p: float) -> str:
-    return f"{p:.2g}%" if p < 1 else f"{p:.1f}%"
+    if p >= 1:
+        return f"{p:.1f}%"
+    # plain decimals, never scientific notation: 7.2e-05 -> "0.00007%", 0.034 -> "0.03%"
+    decimals = max(1, -math.floor(math.log10(p))) if p > 0 else 1
+    return f"{p:.{decimals}f}%"
 
 
 def main():

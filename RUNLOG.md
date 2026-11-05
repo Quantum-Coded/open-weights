@@ -234,3 +234,13 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   | GSM8K acc, edit vs base | 400 | 45 / 22 | 0.0067 | 0.020 | PASS |
   | MATH-500 acc, edit vs rand_w | 200 | 19 / 13 | 0.38 | 0.38 | fail |
 - Run 1 summary: the edit significantly improves GSM8K accuracy (+5.8 pts) and cuts MATH-500 loops (31.5% -> 20.5%); its MATH-500 accuracy gain (+6.0) is not significant and not distinguishable from the same-weights random control. Run 2 stays triggered (rule: run 1 must beat the noise floor AND the random controls).
+- 2026-11-05 21:08 IST: edit on mmlupro300, greedy: 111m10s. acc 0.127 (base 0.143), loop 0.530 (base 0.557), cap 0.027. vs base: -1.7 [-5.3, +1.7], 12 fixed / 17 broken, p 0.46. No transfer to MMLU-Pro.
+- Note: phase7.sh writes logs_<name>.txt, so logs_edit.txt (the MATH-500 fast-track edit log) was overwritten by the GSM8K and then the MMLU-Pro edit runs. The results files are separate and intact; the run times survive in the phase7 output (65m23s, 25m29s, 111m10s). Fresh-set logs use per-set names.
+
+## Phase 8, run 1 (2026-11-05 ~23:40 IST, CPU only)
+- Loop flips on MATH-500 (phase8_loopflips.py): edit removed 33 / added 11 (p 0.0013); rand_w removed 25 / added 15 (p 0.15); rand_s removed 23 / added 25 (p 0.89).
+- Hand-check of 30 graded answers (phase8_handcheck.py: 15 base, 15 edit, random.Random(0), MATH-500 fast track): 30/30 graded correctly. 22 boxed answers equal the gold answer up to formatting (\dfrac vs \frac, 76 vs 76^\circ, Navin vs \text{Navin}); 7 loops have no answer; 1 (edit m500-66) is a genuinely wrong polynomial. No grader errors.
+- Example rule (phase8_examples.py; lowest-index fixed problem per MATH subject, fast track): m500-75 (Counting & Probability), m500-76 (Intermediate Algebra), m500-123 (Geometry), m500-128 (Algebra), m500-197 (Number Theory), m500-200 (Prealgebra), m500-248 (Precalculus); 23 fixed in total. First pick m500-75: base loops (onset at token 2,418) and is stopped at 4,096; edit answers 11/36 in 1,825 tokens. make_demo_video.py reports no weak flags.
+- Rendered demo/m500-75.mp4 (30 s), demo/m500-75_explainer.mp4 (60 s), demo/m500-75_strip.gif. Two fixes to make_demo_video.py first: the percentage is printed in plain decimals (it showed "7.2E-05%"), and the caption groups tensors by type ("self_attn.v_proj.bias (1,278 weights)") so it no longer runs under the layer label.
+- figures/fig1_accuracy_loops.png and fig3_fixed_broken.png drawn for the fast track (the net labels in fig3 moved right so they no longer touch the bars). fig2 (projection) needs a GPU read pass; it is pending.
+- WRITEUP.md: run 1 numbers filled in (TL;DR, what Claude found, results, methodology, caveats).
