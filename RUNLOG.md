@@ -280,3 +280,9 @@ Dated log of every command that matters: runtime and headline output. Becomes th
 
 ## Resumed by Dev, 2026-11-06 21:29 IST
 - Dev: "start". Launched `ops/resume.sh` (fresh.sh, then a3.sh) and a keep-awake timer until 2026-11-09 20:00 IST.
+
+## Paused again by Dev, 2026-11-06 23:43 IST
+- Kept: `results/base_gsm8k_fresh400_greedy.jsonl` (complete, 400 problems, finished 23:05 IST).
+- Stopped: arm e1 on gsm8k_fresh400, under a minute in, nothing written; partial log kept as
+  `logs_fresh_e1_gsm8k_fresh400_killed_20261106.txt`. Keep-awake stopped.
+- Resume with `bash ops/resume.sh`: fresh.sh skips the finished base arm and starts at e1.
