@@ -251,3 +251,17 @@ Dated log of every command that matters: runtime and headline output. Becomes th
 - a3_build.py: run 1's steer.py + make_h4.py with nothing changed except the transcripts. a3_selftest.py: fed run 1's direction, it reproduces run 1's frozen patch exactly (0 of 1,280 values differ).
 - No model has been run on either new set at commit time. Queue: fresh.sh (Amendment 2) -> a3.sh -> editing run 2.
 - Amendment 3 commit: 396f2db (2026-11-05T19:00:21+00:00).
+
+## Phase 7 follow-ups (run 1), finished 2026-11-06 02:22 UTC
+- Full MATH-500 (500, greedy, batch-invariant): base_full 70.0% -> edit_full 74.0%, +4.0 [+0.4, +7.6],
+  54 fixed / 34 broken, exact McNemar p = 0.042 (single test, not part of the Holm family). Loops 24.4% ->
+  18.4% (63 removed / 33 added, p = 0.0029). `logs_analyze_full.txt`.
+- Split (`phase7_full_split.py`, `logs_analyze_full_split.txt`): the 200 fast-track problems in the full runs
+  are byte-identical to the fast-track runs (200/200 base, 200/200 edit). On the other 300 problems alone:
+  72.7% -> 75.3%, 31 / 23, p = 0.34; loops 19.7% -> 17.0%, 30 removed / 22 added, p = 0.33. Not significant:
+  the full-set p < 0.05 leans on the fast-track 200. Reported as such.
+- Sampled MATH-500 (200 x 2, T 0.6, top-p 0.95): base 82.0% -> edit 79.2%, -2.8 [-6.2, +0.8], 19 / 29 by
+  problem, sign-flip p = 0.17. Loops are already ~1% under sampling (1.0% -> 0.8%), so the loop fix has
+  nothing to act on; consistent with the editor's own prediction that the benefit would shrink under
+  sampling. `logs_analyze_sampled.txt`.
+- Next on the GPU: fresh.sh (Amendment 2), then a3.sh (Amendment 3), then editing run 2.
