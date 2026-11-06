@@ -265,3 +265,15 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   nothing to act on; consistent with the editor's own prediction that the benefit would shrink under
   sampling. `logs_analyze_sampled.txt`.
 - Next on the GPU: fresh.sh (Amendment 2), then a3.sh (Amendment 3), then editing run 2.
+
+## Paused by Dev, 2026-11-06 (IST morning)
+- Dev asked to stop all processes and resume on their say-so. Stopped: fresh.sh (Amendment 2) during its
+  first arm (base on gsm8k_fresh400, about 1 minute in, nothing written to results/), and the queued a3.sh
+  (Amendment 3, had not started). Keep-awake timers stopped. GPU idle, no eval processes left.
+- The killed run's partial log is kept as `logs_fresh_base_gsm8k_fresh400_killed_20261106.txt`. No results
+  file existed, so the resumed run uses the same name and command (nothing has been seen from it).
+- Queue scripts copied into `ops/` so they survive outside the session scratchpad: fresh.sh, phase7.sh,
+  run2_prep.sh, run2_launch.sh, send_prompt.sh, watch_editor2.sh.
+- To resume, in this order: `bash ops/fresh.sh` (skips any arm whose results file exists), then
+  `bash a3.sh`, then editing run 2 (`ops/run2_prep.sh`, `ops/run2_launch.sh`, `ops/send_prompt.sh`,
+  `E=~/wsp-r2/editor bash ops/watch_editor2.sh`, with its deadline moved to match the new start).
