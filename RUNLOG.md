@@ -277,3 +277,6 @@ Dated log of every command that matters: runtime and headline output. Becomes th
 - To resume, in this order: `bash ops/fresh.sh` (skips any arm whose results file exists), then
   `bash a3.sh`, then editing run 2 (`ops/run2_prep.sh`, `ops/run2_launch.sh`, `ops/send_prompt.sh`,
   `E=~/wsp-r2/editor bash ops/watch_editor2.sh`, with its deadline moved to match the new start).
+
+## Resumed by Dev, 2026-11-06 21:29 IST
+- Dev: "start". Launched `ops/resume.sh` (fresh.sh, then a3.sh) and a keep-awake timer until 2026-11-09 20:00 IST.
