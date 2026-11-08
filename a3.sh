@@ -3,6 +3,7 @@
 set -u
 while pgrep -f "fresh.sh|phase7.sh" > /dev/null; do sleep 60; done
 cd ~/wsp-r1 && source .venv/bin/activate
+export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 VLLM_NO_USAGE_STATS=1 DO_NOT_TRACK=1   # runs with no internet (Dev offline, 8 Nov)
 unset VLLM_BATCH_INVARIANT
 echo "a3 start $(date -Is)"
 run() {   # run <name> <model> <set> [extra args]

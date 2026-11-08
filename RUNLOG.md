@@ -290,3 +290,13 @@ Dated log of every command that matters: runtime and headline output. Becomes th
 ## Resumed by Dev, 2026-11-08 11:04 IST
 - Dev: "Continue". Launched `ops/resume.sh` (fresh.sh skips the finished base arm on gsm8k_fresh400 and starts at e1,
   then a3.sh). Keep-awake until 2026-11-11 20:00 IST.
+
+## Offline run, 2026-11-08 (Dev going offline)
+- The GPU queue (ops/resume.sh: fresh.sh, then a3.sh) needs no internet. Checked under a dead proxy: the
+  only Hub call, `apply_patch.base_dir()` (used by a3_build.py and apply_patch.py), falls back to the cached
+  snapshot ad9f0ae0 after about 50 s of retries; with `HF_HUB_OFFLINE=1` it resolves locally at once.
+- a3.sh now exports HF_HUB_OFFLINE=1, TRANSFORMERS_OFFLINE=1, VLLM_NO_USAGE_STATS=1 before any step. No
+  change to what it computes. fresh.sh was already running and is left untouched (its eval.py runs load
+  only local model folders).
+- Editing run 2 needs the internet (the editor is a Claude Code session), so it waits until Dev is back
+  online. Logging, analysis write-up and pushes also wait.
