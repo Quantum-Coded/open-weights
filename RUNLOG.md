@@ -312,3 +312,40 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   has a prompt over 1,024 tokens whose answer reached the limit). Checked with a throwaway run, base model,
   600-token cap (`fixtest_ctxlimit`, accuracy meaningless): mmlup-11603 ends as cap at 69 tokens, no crash.
   The same code runs for every Amendment 3 arm. No edited-model output on this set existed at the time.
+
+## Amendment 2 results (fresh sets), finished 2026-11-08 19:36 IST
+Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap, batch-invariant).
+`logs_analyze_fresh_*.txt`, `amendment2_primary.py` -> `logs_amendment2_primary.txt`.
+
+| Set | base | e1 | e1x1.5 | rand_w |
+|---|---|---|---|---|
+| gsm8k_fresh400 accuracy | 72.2% | 78.2% (+6.0 [+2.2, +9.8]) | 78.8% (+6.5 [+2.5, +10.5]) | 74.8% |
+| gsm8k_fresh400 loop rate | 23.5% | 13.8% | 11.0% | 20.2% |
+| mmlupro_fresh300 accuracy | 9.7% | 10.7% (+1.0 [-2.3, +4.3]) | 12.3% (+2.7 [-0.7, +6.0]) | 11.7% |
+| mmlupro_fresh300 loop rate | 51.3% | 50.0% | 47.0% | 55.7% |
+
+- Primary family (pre-registered: e1, e1x1.5, e2 vs base on each fresh set, Holm over up to 6). e2 does not
+  exist yet. Raw exact McNemar p: e1 GSM8K 45/21 p = 0.0043; e1x1.5 GSM8K 49/23 p = 0.0029; e1 MMLU-Pro
+  15/12 p = 0.70; e1x1.5 MMLU-Pro 18/10 p = 0.18.
+  - Holm over the 4 existing tests: GSM8K e1 0.013 PASS, e1x1.5 0.012 PASS; MMLU-Pro both fail.
+  - Whatever e2 gives, with m = 6 the largest multiplier either GSM8K test can get is 6, so both stay below
+    0.05 (0.026 and 0.018). The GSM8K passes are final; the full Holm table is written once e2 exists.
+- Result: run 1's GSM8K gain replicates on 400 problems nobody had looked at (+6.0 vs +5.8 on the original
+  set). MMLU-Pro: no effect, as before.
+- Secondary: e1 vs rand_w on fresh GSM8K 41/27, p = 0.11 (not significant). Loops on fresh GSM8K: e1 removed 59
+  and added 20 (p = 1.3e-5); rand_w removed 48 and added 35 (p = 0.19).
+
+## Amendment 3 build (2026-11-08 20:06 IST)
+- a3prac (base, 128 MMLU-Pro practice questions, 8,192 cap): 10.9% accuracy, 48.4% loops, 114 failed, 63 finished.
+- Healthy class A had 1,971 positions (< 2,000), so class B was used, as the rule fixes (B: 4,397 positions;
+  loop: 135,827). |d| = 18.31, cosine with run 1's direction 0.51, realized fraction 0.84.
+- patch_e3 sha256 80dbfa8aa11772d00b4033c5e27505a902104316635244809c230705755617b5 (1,279 weights in
+  v_proj.bias of layers 10-14); rand_e3 same weights, same per-tensor norm, seed 0 (1,277 changed).
+
+## While online, 2026-11-08 ~22:30 IST
+- Installed lm-eval 0.4.13 into .venv for the pre-registered GSM8K cross-check, with every existing package
+  pinned (pip constraints from `pip freeze`): only new packages were added, none changed (torch 2.10.0+cu128,
+  vllm 0.19.1, transformers 5.22.1 unchanged). Added packages: `requirements.lmeval-added.txt`. 0.4.9 failed
+  to import with transformers 5.x, so 0.4.13 is used. GSM8K test data cached; task load checked offline.
+- `ops/lmeval_gsm8k.sh` queued: waits for a3.sh, then base and edit with gsm8k_cot_zeroshot, chat template,
+  </think> stripping, 16,384 max tokens, greedy. Output in results/lmeval/.
