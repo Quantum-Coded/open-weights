@@ -300,3 +300,15 @@ Dated log of every command that matters: runtime and headline output. Becomes th
   only local model folders).
 - Editing run 2 needs the internet (the editor is a Claude Code session), so it waits until Dev is back
   online. Logging, analysis write-up and pushes also wait.
+
+## Amendment 3: crash and fix, 2026-11-08
+- a3prac, the e3 build and the controls finished (details logged with the A3 results). The first arm on
+  mmlupro_fresh2_300 (base) crashed after 84 min: question mmlup-11603 has a 1,555-token prompt, above the
+  1,024-token allowance in `max_len = max_tokens + 1024`, so its answer hit the model's context limit
+  (17,408) before the 16,384-token cap, and the next chunk request raised a vLLM ValueError. Nothing was
+  written; the log is kept as `logs_a3_base_mmlupro_fresh2_300_crashed_20261108.txt`.
+- Fix in `gen.py`: an answer whose prompt + output reaches the context limit is stopped and counted as a cap.
+  Every earlier run is unaffected (only answers that would have crashed take the new branch; no earlier set
+  has a prompt over 1,024 tokens whose answer reached the limit). Checked with a throwaway run, base model,
+  600-token cap (`fixtest_ctxlimit`, accuracy meaningless): mmlup-11603 ends as cap at 69 tokens, no crash.
+  The same code runs for every Amendment 3 arm. No edited-model output on this set existed at the time.

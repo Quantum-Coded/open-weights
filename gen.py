@@ -47,9 +47,11 @@ def load_llm(model_dir: str, max_len: int, gpu_util: float | None = None):
         gpu_util = float(os.environ.get("WSP_GPU_UTIL", "0.80"))
     # Attention backend pinned (auto-selection picks FLASH_ATTN on this GPU anyway); vLLM's
     # batch-invariant mode (env VLLM_BATCH_INVARIANT=1) refuses to start unless it is explicit.
-    return LLM(model=model_dir, dtype="bfloat16", max_model_len=max_len,
-               gpu_memory_utilization=gpu_util, enable_prefix_caching=True,
-               attention_backend="FLASH_ATTN", seed=0)
+    llm = LLM(model=model_dir, dtype="bfloat16", max_model_len=max_len,
+              gpu_memory_utilization=gpu_util, enable_prefix_caching=True,
+              attention_backend="FLASH_ATTN", seed=0)
+    llm._wsp_max_len = max_len
+    return llm
 
 
 def free_llm(llm) -> None:
@@ -66,6 +68,7 @@ def generate(llm, rows: list[dict], *, max_tokens: int, temperature: float,
 
     tok = llm.get_tokenizer()
     eos = tok.eos_token_id
+    max_ctx = getattr(llm, "_wsp_max_len", None) or 10**9
     gens = [Gen(row=r, sample=s, prompt_ids=build_prompt_ids(tok, r))
             for r in rows for s in range(n_samples)]
 
@@ -96,7 +99,10 @@ def generate(llm, rows: list[dict], *, max_tokens: int, temperature: float,
                 g.first_flag = len(g.out_ids)
             if c.finish_reason == "stop" or (g.out_ids and g.out_ids[-1] == eos):
                 g.status = "finished"
-            elif len(g.out_ids) >= max_tokens:
+            elif len(g.out_ids) >= max_tokens or len(g.prompt_ids) + len(g.out_ids) >= max_ctx:
+                # max_ctx: a prompt longer than the 1,024-token allowance can reach the model's
+                # context limit before max_tokens; vLLM then stops with "length" and one more
+                # request would crash (8 Nov fix, Amendment 3). Counted as a cap.
                 g.status = "cap"
             elif early_stop and g.first_flag is not None:
                 g.status = "loop"
