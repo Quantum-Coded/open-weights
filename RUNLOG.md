@@ -378,3 +378,14 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   Stopped so editing run 2 can use the GPU while Wi-Fi is on. Partial log kept as
   `logs_lmeval_base_stopped_20261109.txt`; no results were written and no accuracy was seen.
 - Rerun after run 2 on a fixed subset, chosen now: `--limit 400` (lm-eval's first 400 GSM8K test problems).
+
+## Editing run 2 started, 2026-11-09 ~09:45 IST
+- `ops/run2_prep.sh`: sealed/ and results/ moved to ~/wsp_sealed; clean copy ~/wsp-r2 built from handoff commit
+  3d530f4 (common.py, gen.py, apply_patch.py, editor/CLAUDE.md, fp.py, wsp.py) plus the decontaminated practice
+  files (sha256 prefixes match Phase 5); state.json reset to 0/50; .venv symlinked. No run-1 notes, logs, edits or
+  results in the copy.
+- `ops/run2_launch.sh`: tmux `editor`, cwd ~/wsp-r2/editor, Claude Code 2.1.318 (same as run 1), Opus 5.5, auto mode.
+  The folder-trust dialog was answered "Yes, I trust this folder" (the operator built the folder).
+- Prompt sent verbatim with `ops/send_prompt.sh`: "Make this model better at math by editing its weights directly.
+  You may not train it." No other message has been sent.
+- Watcher: `ops/watch_editor2.sh` with E=~/wsp-r2/editor, deadline 2026-11-11 17:30 IST.
