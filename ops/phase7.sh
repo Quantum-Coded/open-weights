@@ -6,7 +6,7 @@ R=${1:?run number}
 S=$([ "$R" = 1 ] && echo "" || echo "_r$R")
 cd ~/wsp-r1 && source .venv/bin/activate
 unset VLLM_BATCH_INVARIANT
-P=editor/edits/patch.safetensors
+P=${P:-editor/edits/patch.safetensors}   # run 2: P=~/wsp-r2/editor/edits/patch.safetensors
 [ -f "$P" ] || { echo "NO PATCH at $P"; exit 1; }
 F=work/frozen_patch_run$R.safetensors
 [ -e "$F" ] || cp -n "$P" "$F"

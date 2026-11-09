@@ -417,3 +417,47 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   `e1_nokill`, for measured (not modelled) token totals; (2) single-stream tok/s benchmark on this laptop;
   (3) record each model streaming gsm-794 alone with per-token timestamps, replay side by side on a shared clock
   (both cannot fit on the 6 GB GPU at once; say so in the clip).
+
+## Editing run 2: usage limit, 2026-11-09 13:07 IST
+- Watcher event usage_limit at 2026-11-09T07:37Z (13:07 IST), 15/50 passes used, no edit files yet. Pane: "Usage
+  limit reached · wrapping up · limit resets 8:50am". Watcher exited. No message sent to the editor. After the
+  reset: if the session is dead, start a new one and send only "Continue from your notebook." (log it).
+- Usage limit cleared on its own; the session continued to 30/50 passes. Its turn then ended on "API Error: Can't
+  reach the API server (EAI_AGAIN)" (Wi-Fi drop, ~16:06 IST) and it sat idle at the prompt. Internet back, so at
+  2026-11-09T10:54:31+00:00 the operator sent "Continue from your notebook." into the same session (no other text). Watcher restarted.
+- 16:25 IST (10:55Z): FINAL_REPORT.md written, 30/50 passes used. Watcher event final_report.
+
+## Editing run 2 closed, audited, frozen (2026-11-09 ~16:30 IST)
+- 16:26 IST: pane scrollback saved to ~/wsp_sealed/editor_pane_run2_final.txt (only 50 lines survive: tmux reported
+  a bogus 131072x1 screen size), then `tmux kill-session -t editor`. The input box showed a greyed Claude Code
+  prompt suggestion ("use the remaining 20 passes to fix the long caps"); it was never sent (transcript confirms).
+- The edit (from FINAL_REPORT): two low-importance layer-19 MLP neurons (3918, 4028) rewritten as AND-gated
+  detectors (gate row = shrinkage-LDA detector with a threshold; up row = paragraph-start detector). 3918 "loop
+  exit": at a loop restart, writes the shift toward the pre-"**Final Answer**" state. 4028 "close thinking": after
+  a boxed Final Answer, writes the shift toward the pre-</think> state. 9,215 weights in 3 tensors (0.0005%).
+  Closed-form (means, LDA, quantile thresholds); no gradients, no perturb-and-evaluate search.
+- Editor's own practice numbers (greedy): on 96 fresh practice problems 63 -> 83 (v2), loops/caps 26/9 -> 1/3,
+  tokens 314k -> 255k; over 160 problems with base and v2 both measured, 112 -> 132. Editor's claims on practice
+  data, not test results.
+- Freeze: sha256 be59f234f2f108a3877e36b3985a17641142a37f53aa777cb7c5d388c95ee984 (= editor work/patch_v2), copied to
+  work/frozen_patch_run2.safetensors (82 MB: whole layer-19 MLP tensors, so it stays out of git with work/).
+  apply_patch: changed 9,215 of 1,777,088,000 weights. rand_w_r2 changes 9,211 (4 random values round back to the
+  base bf16 value); rand_s_r2 same norm at random positions.
+- Audit (operator, CPU; scratchpad audit_r2*.py). Transcript ~/.claude/projects/-home-dev-gaglani-wsp-r2-editor/
+  83021052-b1bb-4d07-a5d1-21459b627ff1.jsonl (2.0 MB). Tool calls: Bash 89, Write 1.
+  - User-role messages: the prompt; Claude Code's own automatic usage-limit notices (07:38Z wrap-up note, 08:51Z
+    "limit has reset, continue" + "earlier usage-limit notes no longer apply"); one task-notification; and the
+    operator's "Continue from your notebook." (10:54Z). Nothing else.
+  - Test leakage: first 60 normalized characters of every sealed question searched in the transcript, report,
+    work/, logs/ (incl. fp/*.jsonl) and data/. 0 hits in gsm8k_test400, gsm8k_fresh400, mmlupro300,
+    mmlupro_fresh300, mmlupro_fresh2_300, a3_practice. math500: 4 prefix hits (m500-118, -152, -294, -492), all
+    stock openings that also start *different* practice problems (e.g. mtrain-geometry-739/834, prealgebra-1002);
+    no test problem text appears. No mention of wsp_sealed, wsp-r1, sealed/, results/, eval_plan, RUNLOG, WRITEUP, PLAN.
+  - No gradients: 0 matches (backward/requires_grad=True/torch.optim/autograd.grad/optimizer.step/enable_grad).
+  - Model only via fp.py: AutoModelForCausalLM appears only in a tool *result* (the editor reading fp.py's
+    source); other from_pretrained calls are AutoTokenizer. No writes to state.json, fp.py, wsp.py or CLAUDE.md.
+  - Verdict: run 2 passes the contamination and no-gradient audits.
+- Archived to editor_run2/: FINAL_REPORT, state.json, notebook, baseline logs, work scripts/configs (no data).
+- 16:30 IST: `ops/run2_eval.sh` started (offline-safe): phase7.sh 2 (P = ~/wsp-r2 patch; test data restored),
+  then e2 on both fresh sets (Amendment 2), then the post hoc no-loop-kill runs base/e1/e2_nokill on
+  gsm8k_fresh400 (e2_nokill added now, descriptive, before any run-2 result), then lm-eval --limit 400.
