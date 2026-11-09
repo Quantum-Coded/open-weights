@@ -8,3 +8,4 @@ demo/
 __pycache__/
 logs_*.txt
 editor/logs/fp/
+assets/fonts/

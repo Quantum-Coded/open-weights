@@ -461,3 +461,16 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 - 16:30 IST: `ops/run2_eval.sh` started (offline-safe): phase7.sh 2 (P = ~/wsp-r2 patch; test data restored),
   then e2 on both fresh sets (Amendment 2), then the post hoc no-loop-kill runs base/e1/e2_nokill on
   gsm8k_fresh400 (e2_nokill added now, descriptive, before any run-2 result), then lm-eval --limit 400.
+
+## Phase 7 arm results (run 2), first arms, 2026-11-09
+- edit_r2, MATH-500 greedy --limit 200, batch-invariant: 64m06s. acc 0.805 (base 0.660), loop 0.025 (base 0.315),
+  cap 0.015, mean tokens (finished) 3,300. vs base 35 fixed / 6 broken, exact McNemar p 4.9e-6. Loops removed /
+  added 60 / 2, p 8.5e-16.
+- rand_w_r2 (random change on the same 9,211 weights, same per-tensor norm): 123m52s. acc 0.585, loop 0.385.
+  edit_r2 vs rand_w_r2: 48 / 4, p 1.3e-10.
+- Secondary: edit_r2 vs run-1 edit 27 / 10, p 0.0076. edit_r2 vs base_pp (presence penalty 1.5, no edit): 0.805 vs
+  0.855, 7 / 17, p 0.064 (the decode-time penalty is still slightly ahead, not significantly).
+- Holm over 4 waits for the GSM8K arm (follow-ups); the three MATH tests already pass at any GSM8K p.
+- Offline prep (Wi-Fi window): site fonts (Bricolage Grotesque, Figtree, Caveat, JetBrains Mono; OFL) in
+  assets/fonts (gitignored) and ~/.local/share/fonts; npm cache warmed for a blog route (@next/mdx@16.3.5,
+  @mdx-js/*, remark-gfm, remark-math, rehype-katex, katex, rehype-pretty-code, shiki, gray-matter).
