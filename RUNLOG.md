@@ -349,3 +349,32 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   to import with transformers 5.x, so 0.4.13 is used. GSM8K test data cached; task load checked offline.
 - `ops/lmeval_gsm8k.sh` queued: waits for a3.sh, then base and edit with gsm8k_cot_zeroshot, chat template,
   </think> stripping, 16,384 max tokens, greedy. Output in results/lmeval/.
+
+## Amendment 3 results, finished 2026-11-09 06:52 IST
+`logs_analyze_a3*.txt`, `amendment3_primary.py` -> `logs_amendment3_primary.txt`. mmlupro_fresh2_300, greedy,
+16,384 cap, batch-invariant.
+
+| Arm | Accuracy | Loop rate | Cap rate |
+|---|---|---|---|
+| base | 12.7% | 51.3% | 1.0% |
+| e3 | 11.0% | 49.3% | 1.3% |
+| rand_e3 | 12.7% | 50.0% | 0.7% |
+| base_pp (presence penalty 1.5) | 20.3% | 10.3% | 5.0% |
+
+- Primary (Holm over 2): e3 vs base 14 better / 19 worse, p raw 0.49, Holm 0.97, FAIL. e3 vs rand_e3 14 / 19,
+  p raw 0.49, Holm 0.97, FAIL. No claim of a gain and no claim of beating a random edit.
+- Secondary: e3 loops removed/added vs base 51/45 (p = 0.61). Presence penalty vs base 31/8 (p = 0.0009),
+  e3 vs base_pp 6/34. By category nothing moves (largest: chemistry 7 -> 5). e3 on MATH-500 200: 66.0% -> 68.0%,
+  21/17, p = 0.63, loops 31.5% -> 25.0% (does not hurt maths).
+- Reading: run 1's recipe, re-estimated on MMLU-Pro transcripts, does not fix MMLU-Pro loops. The healthy class
+  had to fall back to B (finished runs) because only 16 of 128 practice answers were correct; the loop/healthy
+  contrast on MMLU-Pro is weaker and only half-aligned with run 1's (cosine 0.51).
+- Note for audit: base scores 0 in law (0/35), health (0/18), biology (0/15), history and other, below the
+  10-option chance rate. Grader extraction on MMLU-Pro to be hand-checked (CPU, during run 2). The comparisons
+  above are paired and use the same grader, so they stand either way.
+
+## lm-eval cross-check stopped, 2026-11-09 09:30 IST
+- At 88 output tok/s it had done 190 of 1,319 problems in 2.5 h (about 30 h for both arms; no loop early stop).
+  Stopped so editing run 2 can use the GPU while Wi-Fi is on. Partial log kept as
+  `logs_lmeval_base_stopped_20261109.txt`; no results were written and no accuracy was seen.
+- Rerun after run 2 on a fixed subset, chosen now: `--limit 400` (lm-eval's first 400 GSM8K test problems).
