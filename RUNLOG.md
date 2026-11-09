@@ -402,3 +402,18 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   - mmlupro300: base 20.3%, edit 20.3% (23/23).
 - Conclusions unchanged: no edit moves MMLU-Pro under either grader; the presence penalty does (+13 points lenient).
   Report MMLU-Pro absolute numbers with this caveat.
+
+## Token cost on gsm8k_fresh400 + race-demo plan (POST HOC, descriptive), 2026-11-09
+- `posthoc_tokens_gsm8k_fresh.py` (`logs_posthoc_tokens_gsm8k_fresh.txt`), from the existing Amendment 2 results.
+  Not pre-registered; report as descriptive, never as a tested claim.
+  - Tokens actually generated (loop detector on): base 816k, e1 644k (-21%), e1x1.5 629k, rand_w 715k (-12%).
+  - Counting each loop at the 16,384 cap (what a user without our loop killer pays): base 1.91M, e1 1.28M (-33%),
+    rand_w 1.70M (-11%). Speed per token is unchanged (same size model); the saving is answers that stop looping.
+  - 43 problems: base loops, e1 finishes correct. 14 the other way.
+- Race demo, rule fixed now before any GPU run: example = the base-loops / e1-correct problem with the shortest
+  e1 answer, ties by id -> gsm-794 (e1 608 tokens, answer 32; base reaches "32" ~6% into its answer and repeats it
+  42 times without committing). Captions must say it is 1 of 43 such problems and that 14 go the other way.
+- After run 2 (GPU busy now): (1) base and e1 on gsm8k_fresh400 with --no_early_stop, new names `base_nokill`,
+  `e1_nokill`, for measured (not modelled) token totals; (2) single-stream tok/s benchmark on this laptop;
+  (3) record each model streaming gsm-794 alone with per-token timestamps, replay side by side on a shared clock
+  (both cannot fit on the 6 GB GPU at once; say so in the clip).
