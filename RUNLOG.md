@@ -389,3 +389,16 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 - Prompt sent verbatim with `ops/send_prompt.sh`: "Make this model better at math by editing its weights directly.
   You may not train it." No other message has been sent.
 - Watcher: `ops/watch_editor2.sh` with E=~/wsp-r2/editor, deadline 2026-11-11 17:30 IST.
+
+## MMLU-Pro grader check (POST HOC, exploratory), 2026-11-09
+- Hand look at wrong base answers in law found a false negative: mmlup-1167 ends "**Answer: G**", gold G, graded
+  wrong, because the pre-registered MCQ grader accepts only a \boxed{} letter. So absolute MMLU-Pro accuracies
+  are understated for every arm.
+- `posthoc_mmlupro_lenient.py` (`logs_posthoc_mmlupro_lenient.txt`) rescored with a lenient extractor (boxed, else
+  explicit "Answer: X" / "the correct answer is X" / "option X" after </think>). Not pre-registered; the
+  pre-registered grader stays primary. (Its "boxed" count column is a broken diagnostic; ignore it.)
+  - mmlupro_fresh2_300: base 12.7% -> 21.0% lenient; e3 21.0% vs 20.7% (31/32), rand_e3 21.3%, base_pp 34.0% (58/19).
+  - mmlupro_fresh300: base 19.7%, e1 21.3% (25/20, p 0.55), e1x1.5 20.3%, rand_w 20.7%.
+  - mmlupro300: base 20.3%, edit 20.3% (23/23).
+- Conclusions unchanged: no edit moves MMLU-Pro under either grader; the presence penalty does (+13 points lenient).
+  Report MMLU-Pro absolute numbers with this caveat.
