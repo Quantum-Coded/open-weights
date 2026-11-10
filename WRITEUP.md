@@ -1,7 +1,7 @@
 # Two neurons, no training: editing DeepSeek-R1's weights to stop its thinking loops, on a laptop GPU
 
-> DRAFT (Phase 8, 11 Nov). All pre-registered results are final. Still TBD: lm-eval on run 1's edit
-> (running), the single-stream race timings, figure 2. Nothing here is published before Dev signs off.
+> DRAFT (Phase 8, 11 Nov). All pre-registered results are final. Still TBD: figure 2 and the Hugging Face
+> link. Nothing here is published before Dev signs off.
 
 ## 1. TL;DR
 
@@ -30,7 +30,8 @@ What it costs and what it does not do:
   (85.5% vs 80.5%; the penalty is ahead on 17 problems, the edit on 7, p = 0.064), and the edit adds nothing on top of it (83.0%).
 - **It depends on the prompt.** Under lm-evaluation-harness's zero-shot GSM8K prompt ("Q: … A: Let's think
   step by step.") the gain shrinks to +3.3 points (71.8% → 75.0%, 28 / 15, p = 0.066), although loops
-  still drop from 48 to 5. See §5.5.
+  still drop from 48 to 5. Run 1's smaller bias edit does slightly better there (76.5%, 41 / 22,
+  p = 0.023), though it leaves more loops (31). See §5.5.
 - **Sampling.** At temperature 0.6 (2 samples per problem) the original rarely loops (1.0%), so the gain
   is small: 82.0% → 85.2% on MATH-500/200 (24 / 11, not significant).
 
@@ -192,7 +193,17 @@ original did not. The edit does not make each token faster (same model size); th
 stop looping. The 6.9× wall-clock ratio depends on this hardware and batch, because long looping contexts
 dominate it.
 
-Single-stream race on gsm-665 (each model recorded alone, replayed on a shared clock in the video): TBD.
+Single-stream race (post hoc, descriptive). Each model was recorded alone on the laptop with per-token
+timestamps (`record_race.py`, results/race/), then replayed side by side on a shared clock in the video.
+Every recording reproduces its evaluation transcript token for token.
+
+| Problem | Original | Run 1 edit | Run 2 edit |
+| --- | --- | --- | --- |
+| gsm-665 (picked by the fixed rule) | 16,384 tokens, 8 min 29 s, limit, no answer | 738 tokens, 16.8 s, correct | 763 tokens, 17.3 s, correct |
+| gsm-794 (the earlier rule's pick) | 16,384 tokens, 8 min 44 s, limit, no answer | 608 tokens, 13.9 s, correct | 896 tokens, 20.5 s, correct |
+
+On gsm-665 the edited model answers in 1/29 of the time. The original also generates more slowly by the end
+(32 vs 44 tokens/s) because its context keeps growing; the weights edit itself costs nothing per token.
 
 ### 5.5 Cross-check: lm-evaluation-harness (pre-registered: "direction and rough size")
 
@@ -203,7 +214,7 @@ first 400 GSM8K test problems:
 | --- | --- | --- |
 | Original | 71.75% | 4 h 51 min |
 | Run 2 edit | 75.00% (28 / 15, p = 0.066) | 30 min |
-| Run 1 edit | TBD | TBD |
+| Run 1 edit | 76.50% (41 / 22, p = 0.023) | 2 h 31 min |
 
 **Direction agrees; size does not.** +3.3 points here vs +11.0 in our harness. Post hoc diagnosis:
 - On the 126 problems both harnesses share, our harness gives 75.4% → 86.5% (18 / 4) and lm-eval
@@ -212,6 +223,10 @@ first 400 GSM8K test problems:
   still removes loops (48 → 5), but more of the rescued answers are wrong (wrong finished answers 74 → 96).
 - This matches the editor's own warning that its "conclude" direction was learned from one closing style.
   The edit generalises across problems and subjects; it is less robust to a different prompt format.
+- Run 1's edit (a bias shift away from a "looping" direction, no "conclude" target) holds up better under
+  this prompt: 76.5% vs run 2's 75.0% (not tested against each other), with 31 loop/cap answers left vs 5.
+  With boxed-answer scoring: original 68.5%, run 1 75.0% (46 / 20, p = 0.0019), run 2 73.25% (33 / 14,
+  p = 0.0079). Both edits pass "direction"; neither keeps its size from our harness.
 
 ## 6. Methodology
 

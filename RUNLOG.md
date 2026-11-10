@@ -544,3 +544,16 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   under e2; e2 loops on 2 problems where base did not.
 - `ops/race.sh` + `record_race.py`: each arm alone (batch size 1), greedy, no loop kill, 16,384 cap, a timestamp
   per engine step, text checked against the batched no-loop-kill run. Queued behind lm-eval.
+
+## lm-eval on run 1's edit + race recordings, 2026-11-11 01:56 IST
+- lm-eval (same settings, first 400): run 1 edit flexible-extract 0.7650 (2h31m). Paired vs base: fixed 41, broke 22,
+  exact McNemar p = 0.0226. Boxed-answer scoring (post hoc): 0.7500 (46/20, p 0.0019). Loop/cap answers 31 (base 48,
+  edit_r2 5). Log: logs_posthoc_lmeval_paired_r1.txt.
+- Cross-check verdict for run 1: direction agrees; size +4.75 vs +5.8 on our gsm8k_test400, i.e. roughly holds.
+  Under this prompt run 1 scores 1.5 points above run 2 (not tested; descriptive). Reported in WRITEUP §1 and §5.5.
+- Race recordings (results/race/, record_race.py, batch size 1, every text matches its eval transcript):
+  | | base | e1 | e2 |
+  |---|---|---|---|
+  | gsm-665 | 16384 tok, 509.3 s, cap | 738 tok, 16.8 s, correct | 763 tok, 17.3 s, correct |
+  | gsm-794 | 16384 tok, 523.5 s, cap | 608 tok, 13.9 s, correct | 896 tok, 20.5 s, correct |
+  Base runs at 32 tok/s vs 44 for the edits (longer context). Video data rebuilt from gsm-665 (real timings).
