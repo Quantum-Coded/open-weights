@@ -501,3 +501,15 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   among gsm8k_fresh400 problems where base loops and e2 finishes correct, the shortest e2 answer, ties by id.
 - lm-eval cross-check: edit_r2 added as a third arm, run first (10 Nov 09:15 IST, before any lm-eval accuracy was
   seen); same settings, --limit 400.
+
+## No-loop-kill runs on gsm8k_fresh400 (POST HOC, descriptive; race demo), 2026-11-10
+- Same 400 problems, greedy, --no-early-stop (loops run to the 16,384 cap), batched on this laptop:
+  | Arm | acc | answers hitting the cap | total output tokens | wall clock |
+  |---|---|---|---|---|
+  | base_nokill | 0.7225 | 95 | 1,905,760 | 407m34s |
+  | e1_nokill | 0.7825 | 55 | 1,276,625 | 241m44s |
+  | e2_nokill | 0.8425 | 9 | 735,252 | 59m06s |
+- Accuracy equals the loop-killed runs: no loop recovered when allowed to run on (cap count = loop count).
+  Run 2's edit: -61% tokens and ~6.9x less wall clock than base on this batch. Wall clock is dominated by the
+  looping tail (long contexts), so it is a property of this hardware and batch, reported as such.
+- 17:36 IST: lm-eval started (edit_r2 first).
