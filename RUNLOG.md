@@ -499,3 +499,5 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   answers 145 -> 267 and 130 -> 278. The MMLU-Pro gain is not only a boxing/format effect.
 - Race-demo rule for run 2, fixed now before looking at any per-problem e2 output: same rule as for e1 --
   among gsm8k_fresh400 problems where base loops and e2 finishes correct, the shortest e2 answer, ties by id.
+- lm-eval cross-check: edit_r2 added as a third arm, run first (10 Nov 09:15 IST, before any lm-eval accuracy was
+  seen); same settings, --limit 400.

@@ -8,7 +8,7 @@ while pgrep -f "a3.sh|fresh.sh" > /dev/null; do sleep 60; done
 cd ~/wsp-r1 && source .venv/bin/activate
 export HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 VLLM_NO_USAGE_STATS=1 DO_NOT_TRACK=1 VLLM_BATCH_INVARIANT=1
 mkdir -p results/lmeval
-for arm in base edit; do
+for arm in edit_r2 base edit; do   # edit_r2 added 10 Nov (before any lm-eval result), run first
   if ls results/lmeval/$arm/*/results_*.json > /dev/null 2>&1; then echo "SKIP lmeval $arm"; continue; fi
   echo "START lmeval $arm $(date -Is)"
   ( time lm_eval --model vllm \
