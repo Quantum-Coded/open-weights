@@ -513,3 +513,25 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   Run 2's edit: -61% tokens and ~6.9x less wall clock than base on this batch. Wall clock is dominated by the
   looping tail (long contexts), so it is a property of this hardware and batch, reported as such.
 - 17:36 IST: lm-eval started (edit_r2 first).
+
+## lm-eval GSM8K cross-check, run 2's edit vs base, 2026-11-11 00:45 IST
+- Pre-registered cross-check (eval_plan.md: "agreement in direction and rough size with eval.py"), lm-eval 0.4.13,
+  gsm8k_cot_zeroshot, chat template, reasoning stripped at </think>, greedy, 16,384 tokens, --limit 400 (first 400).
+  | Arm | flexible-extract | wall clock |
+  |---|---|---|
+  | base | 0.7175 | 4h51m |
+  | edit_r2 | 0.7500 | 30m |
+  Paired (flexible-extract): edit_r2 fixed 28, broke 15, exact McNemar p = 0.066.
+- Verdict: direction agrees; size does NOT. +3.3 points here vs +11.0 on our gsm8k_test400 (74.0 -> 85.0).
+- POST HOC diagnosis (posthoc_lmeval_*.py, descriptive, chosen after seeing the numbers):
+  - Same problems, two harnesses: 126 of our gsm8k_test400 problems are among lm-eval's first 400. On those, our
+    harness: 75.4 -> 86.5 (18/4, p 0.004); lm-eval: 72.2 -> 74.6 (6/3, p 0.51). The gap is the harness, not the
+    problems.
+  - lm-eval's prompt ("Q: ... A: Let's think step by step.", no \boxed instruction) loops less on base: 48 of 400
+    answers hit the cap (12%) vs 82 of 400 (20.5%) in ours. The edit still removes the loops (48 -> 5), but
+    under this prompt more of the rescued answers are wrong: wrong-but-finished answers 74 -> 96, wrong loops 39 -> 4
+    (9 base loops score as correct only because flexible-extract takes the last number in the looping text).
+  - Scoring by the last \boxed answer instead of flexible-extract: 0.685 -> 0.7325 (33/14, p 0.008).
+- What this means for the write-up: the loop fix transfers across harnesses; the accuracy gain is prompt-dependent
+  and is about a third as large under lm-eval's zero-shot "Let's think step by step" prompt. Reported as such.
+- lm-eval on run 1's edit is still running (started 22:58 IST 10 Nov).
