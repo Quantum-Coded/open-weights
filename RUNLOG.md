@@ -535,3 +535,12 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 - What this means for the write-up: the loop fix transfers across harnesses; the accuracy gain is prompt-dependent
   and is about a third as large under lm-eval's zero-shot "Let's think step by step" prompt. Reported as such.
 - lm-eval on run 1's edit is still running (started 22:58 IST 10 Nov).
+
+## Race-demo example and recording, 2026-11-11 01:00 IST (POST HOC, descriptive)
+- Rule applied (fixed 10 Nov before looking): among gsm8k_fresh400 problems where base loops and e2 finishes
+  correct (52 problems), the shortest e2 answer, ties by id -> gsm-665 (e2 763 tokens; e1 also correct, 738).
+  Run 1's example stays gsm-794.
+- Captions must also say: on these 400 problems e2 vs base fixed 53, broke 5; of base's 94 loops, 52 end correct
+  under e2; e2 loops on 2 problems where base did not.
+- `ops/race.sh` + `record_race.py`: each arm alone (batch size 1), greedy, no loop kill, 16,384 cap, a timestamp
+  per engine step, text checked against the batched no-loop-kill run. Queued behind lm-eval.
