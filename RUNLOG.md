@@ -474,3 +474,28 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 - Offline prep (Wi-Fi window): site fonts (Bricolage Grotesque, Figtree, Caveat, JetBrains Mono; OFL) in
   assets/fonts (gitignored) and ~/.local/share/fonts; npm cache warmed for a blog route (@next/mdx@16.3.5,
   @mdx-js/*, remark-gfm, remark-math, rehype-katex, katex, rehype-pretty-code, shiki, gray-matter).
+- rand_s_r2: acc 0.705, loop 0.240 (71m). edit_pp_r2 (edit + presence penalty 1.5): 0.830, loop 0.015 (base_pp 0.855).
+  edit_rerun_r2 (normal kernels): 0.805, loop 0.060 (33m) -- same accuracy as the batch-invariant run.
+- Follow-ups: GSM8K test400 0.850 (base 0.740), loop 0.030; MMLU-Pro300 0.293 (base 0.143), loop 0.077;
+  full MATH-500 0.818 (base 0.700), loop 0.034; MATH-500 sampled /200 0.8525 (base 0.820), loop 0.000.
+- e2 on the fresh sets (Amendment 2): gsm8k_fresh400 0.8425 (base 0.7225), loop 0.0225; mmlupro_fresh300 0.223
+  (base 0.097), loop 0.100.
+
+## Run 2 primary results (pre-registered), 2026-11-10 09:10 IST
+- Run 2 family (eval_plan.md, Holm over 4), exact McNemar:
+  | Test | fixed/broken (loops removed/added) | p raw | p Holm | |
+  |---|---|---|---|---|
+  | MATH-500 loop rate, edit_r2 vs base | 60 / 2 | 8.5e-16 | 3.4e-15 | PASS |
+  | MATH-500 acc, edit_r2 vs rand_w_r2 | 48 / 4 | 1.3e-10 | 3.9e-10 | PASS |
+  | GSM8K acc, edit_r2 vs base | 54 / 10 | 2.0e-8 | 4.0e-8 | PASS |
+  | MATH-500 acc, edit_r2 vs base | 35 / 6 | 4.9e-6 | 4.9e-6 | PASS |
+- Amendment 2 final family (Holm over 6): e2 gsm8k_fresh400 53/5 p 3.5e-11 (Holm 2.1e-10) PASS; e2 mmlupro_fresh300
+  45/7 p 7e-8 (Holm 3.5e-7) PASS; e1x1.5 gsm8k_fresh400 Holm 0.012 PASS; e1 gsm8k_fresh400 Holm 0.013 PASS;
+  e1x1.5 mmlupro_fresh300 Holm 0.37 fail; e1 mmlupro_fresh300 Holm 0.70 fail.
+  -> "measurable gain on an untouched application": e2 on both fresh sets, including MMLU-Pro (not math).
+- Secondary: MMLU-Pro300 edit_r2 vs base 50/5 p 2e-10; mmlupro_fresh300 e2 vs rand_w (run 1's control) 39/7.
+- MMLU-Pro grader caveat check (POST HOC, posthoc_mmlupro_lenient_r2.py, same lenient extractor as before):
+  mmlupro_fresh300 base 0.197 -> e2 0.320 (57/20); mmlupro300 base 0.203 -> edit_r2 0.363 (60/12). Finished
+  answers 145 -> 267 and 130 -> 278. The MMLU-Pro gain is not only a boxing/format effect.
+- Race-demo rule for run 2, fixed now before looking at any per-problem e2 output: same rule as for e1 --
+  among gsm8k_fresh400 problems where base loops and e2 finishes correct, the shortest e2 answer, ties by id.
