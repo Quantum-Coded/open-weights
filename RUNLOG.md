@@ -557,3 +557,19 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   | gsm-665 | 16384 tok, 509.3 s, cap | 738 tok, 16.8 s, correct | 763 tok, 17.3 s, correct |
   | gsm-794 | 16384 tok, 523.5 s, cap | 608 tok, 13.9 s, correct | 896 tok, 20.5 s, correct |
   Base runs at 32 tok/s vs 44 for the edits (longer context). Video data rebuilt from gsm-665 (real timings).
+
+## Amendment 4 pre-registered, 2026-11-11 23:49 IST (before any model runs on its test sets)
+- Dev approved three experiments: Game of 24 (untouched application), a powered T 0.6 test on fresh MATH, and a
+  LoRA fine-tune head-to-head. Plan: eval_plan_amendment4.md. Code: game24.py, a4_make_data.py, a4_eval.py,
+  a4_ft_data.py, a4_ft_train.py, amendment4_primary.py, ops/a4.sh.
+- Data built (a4_make_data.py):
+  - game24_300 sha256 6ec156391123320a3b90073562ee544bc57b1e7d1031dd752bc9cc567f344840 (1,362 solvable puzzles, seed 20261111, items 20-319)
+  - math_fresh1200 sha256 22c61ee4759f7d6767c03d31540714d221abda6909261d7c9de0be73fca0de0a (pool 5,000; skipped 136 MATH-500, 118 practice matches)
+  - ft_problems1200 sha256 b0a5060acf00e0a08f08421eeda97a28a0cfa2811e47c4616a5eba5da5963616 (practice only; no overlap with any sealed set)
+  - pilot a4_data/game24_pilot20 sha256 a7cdbeee1aa7086d0a36d8fdf6a09fe0a2037d8710cbfbbd87ca45f2727f0ed0
+- Base-only pilot, Game of 24, 20 practice puzzles, greedy: 1/20 correct, 19/20 verbatim loops, 49 min (GPU shared
+  with another process for part of it). Grader correct on the finished answer; prompt and grader unchanged.
+- Power for P3 (by simulation from the MATH-500/200 sampled pilot, 29/16): n 1,000 -> 85% (alpha .05) / 73% (.0167); n 1,200 chosen.
+- LoRA dry run (4 synthetic 3,200-token sequences): peak 4.59 GiB, fits the 6 GB GPU.
+- Ollama (another project's mistral:7b eval) was stopped at 22:50 IST with Dev's OK; it was restarted by that project
+  at 22:53. The A4 queue starts once the GPU is free.
