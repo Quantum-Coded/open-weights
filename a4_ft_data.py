@@ -10,21 +10,28 @@ from common import grade, read_jsonl, write_jsonl
 from gen import free_llm, generate, load_llm
 
 A4 = Path(__file__).resolve().parent / "a4_data"
-rows = read_jsonl(A4 / "ft_problems1200.jsonl")
-by_id = {r["id"]: r for r in rows}
-t0 = time.time()
-llm = load_llm("work/base", max_len=3072 + 1024)
-res = generate(llm, rows, max_tokens=3072, temperature=0.6, top_p=0.95, n_samples=1, early_stop=True)
-free_llm(llm)
-keep = []
-for r in res:
-    row = by_id[r["id"]]
-    ok = r["status"] == "finished" and grade(row, r["response"])
-    if ok:
-        keep.append({**row, "response": r["response"], "n_tokens": r["n_tokens"]})
-write_jsonl(A4 / "ft_train.jsonl", keep)
-stat = {s: sum(r["status"] == s for r in res) for s in ("finished", "loop", "cap")}
-print(json.dumps({"problems": len(rows), "status": stat, "kept": len(keep),
-                  "kept_math": sum(r["kind"] == "math" for r in keep),
-                  "kept_gsm8k": sum(r["kind"] == "gsm8k" for r in keep),
-                  "kept_tokens": sum(r["n_tokens"] for r in keep), "wall_s": round(time.time() - t0)}, indent=2))
+
+
+def main():
+    rows = read_jsonl(A4 / "ft_problems1200.jsonl")
+    by_id = {r["id"]: r for r in rows}
+    t0 = time.time()
+    llm = load_llm("work/base", max_len=3072 + 1024)
+    res = generate(llm, rows, max_tokens=3072, temperature=0.6, top_p=0.95, n_samples=1, early_stop=True)
+    free_llm(llm)
+    keep = []
+    for r in res:
+        row = by_id[r["id"]]
+        ok = r["status"] == "finished" and grade(row, r["response"])
+        if ok:
+            keep.append({**row, "response": r["response"], "n_tokens": r["n_tokens"]})
+    write_jsonl(A4 / "ft_train.jsonl", keep)
+    stat = {s: sum(r["status"] == s for r in res) for s in ("finished", "loop", "cap")}
+    print(json.dumps({"problems": len(rows), "status": stat, "kept": len(keep),
+                      "kept_math": sum(r["kind"] == "math" for r in keep),
+                      "kept_gsm8k": sum(r["kind"] == "gsm8k" for r in keep),
+                      "kept_tokens": sum(r["n_tokens"] for r in keep), "wall_s": round(time.time() - t0)}, indent=2))
+
+
+if __name__ == "__main__":  # vLLM starts its engine with spawn, which re-imports this module
+    main()

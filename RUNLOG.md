@@ -589,3 +589,4 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   +8.7 on top of that. Base sampled was slow because its last chunk round (26 answers at 14-16k tokens) barely fits
   the 27k-token KV cache (~6 h for that round). Logged only; no settings changed.
 - Next in queue: fine-tune data (a4_ft_data.py) started 18:00 IST.
+- 18:01 IST: a4_ft_data.py crashed at start-up (no  guard; vLLM spawns its engine and re-imports the module). Wrapped the body in main() with the guard, no other change; queue relaunched 18:01 IST. Crash log kept as logs_a4_ft_data_crash1.txt.
