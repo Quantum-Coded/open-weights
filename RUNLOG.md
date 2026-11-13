@@ -629,3 +629,18 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   the edit changes 9,215 weights with no gradient steps (editor time is reported separately in WRITEUP).
 - Correction to my chat note to Dev: training took 49 min, not 22 (22 min was CPU "sys" time).
 - Queue: base math_fresh1200 is holding (HOLD_A4) while kv_group_test.py runs (started 01:51 IST).
+
+## KV-grouping check FAILED: speed-up not used, 2026-11-14 02:30 IST
+- kv_group_test.py (01:51-02:27 IST, practice data). Greedy: identical (3 requests at round-7 length, 6,144 tokens).
+  Sampled T 0.6: NOT identical. Round-6 length, 6 requests: 2 differ between one call and pairs (first difference at
+  tokens 6 and 16). Round-8 length, 3 requests: 1 differs between the two grouped orders.
+- So the greedy path is batch-invariant, but the sampled path is not: with a per-request seed, a sampled answer still
+  depends on which other requests share its batch. kv_group.on was not created; ops/kv_verify.sh released the hold
+  and base math_fresh1200 sampled1 started at 02:27 IST on the unchanged code path, the same path as every earlier
+  sampled run. Nothing already run is affected.
+- What this means for earlier results: each sampled run (MATH-500 sampled pilot, Game of 24 sampled1, and the coming
+  math_fresh1200) is one valid draw at T 0.6, but rerunning it with a different batch composition would not give
+  the same text. The paired tests treat each problem's answer as one random draw per arm, which holds either way.
+  To add to WRITEUP's limitations: sampled runs are not bit-reproducible; greedy runs are.
+- The test also did not reproduce the slowdown at this size (3 round-8 requests: one call 237 s vs serial 244 s);
+  the 6 h round needed 26 long answers at once. Timeline returns to the slower estimate.
