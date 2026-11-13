@@ -590,3 +590,18 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   the 27k-token KV cache (~6 h for that round). Logged only; no settings changed.
 - Next in queue: fine-tune data (a4_ft_data.py) started 18:00 IST.
 - 18:01 IST: a4_ft_data.py crashed at start-up (no  guard; vLLM spawns its engine and re-imports the module). Wrapped the body in main() with the guard, no other change; queue relaunched 18:01 IST. Crash log kept as logs_a4_ft_data_crash1.txt.
+
+## Faster last rounds for long sampled runs (operational), 2026-11-13 22:10 IST
+- Dev asked to speed up the slow last chunk rounds "as long as we get the output in the best possible manner, no
+  compromise". Cause: the KV cache holds ~27k tokens, so in rounds 7-8 of a 16k run only one answer fits; one
+  llm.generate call over all of them made vLLM preempt and recompute 14k-token prefixes (base Game of 24 sampled:
+  26 answers in round 8 took 6 h 21 min).
+- gen.py: `_groups` splits a round into consecutive groups that fit the cache, only when the flag file
+  `kv_group.on` exists, the round does not fit, and at most 2 answers fit at once (rounds 5-8 of a 16k run).
+  With the flag absent the code path is unchanged (one call per round), so every run so far is unaffected.
+- Safety: each request has its own seed and the kernels are batch-invariant, so grouping should not change any
+  token. kv_group_test.py checks this on practice data (contexts from a4_data/ft_train.jsonl at round-6/7/8
+  lengths; sampled and greedy): one call vs grouped vs grouped in another order must give identical token ids.
+  ops/kv_verify.sh holds the math_fresh1200 runs (a4_eval.py waits while HOLD_A4 exists, before loading the
+  model), runs the test once the fine-tune stage is done, creates kv_group.on only if every token matches, and
+  releases the queue either way. Results: logs_kv_group_test.txt, results/kv_group_test.json.

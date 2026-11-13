@@ -9,3 +9,5 @@ __pycache__/
 logs_*.txt
 editor/logs/fp/
 assets/fonts/
+HOLD_A4
+kv_group.on

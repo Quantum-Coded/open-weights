@@ -42,6 +42,14 @@ def main():
 
     rows = load_set(a.set)
     by_id = {r["id"]: r for r in rows}
+    # Operational hold (13 Nov): ops/kv_verify.sh checks the KV-grouped generation path on the free
+    # GPU before the long sampled MATH runs. Nothing is loaded on the GPU while holding.
+    hold = Path(__file__).resolve().parent / "HOLD_A4"
+    if a.set == "math_fresh1200" and hold.exists():
+        print(f"HOLD {time.strftime('%FT%T')}", flush=True)
+        while hold.exists():
+            time.sleep(30)
+        print(f"RELEASED {time.strftime('%FT%T')}", flush=True)
     t0 = time.time()
     llm = load_llm(a.model, max_len=a.max_tokens + 1024)
     res = generate(llm, rows, max_tokens=a.max_tokens, early_stop=True, **REGIMES[a.regime])

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import gc
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from common import build_prompt_ids, is_looping, text_hash
 
@@ -61,6 +62,42 @@ def free_llm(llm) -> None:
     torch.cuda.empty_cache()
 
 
+KV_GROUP_FLAG = Path(__file__).resolve().parent / "kv_group.on"
+
+
+def kv_capacity(llm) -> int | None:
+    """KV-cache size in tokens, as the engine reported it at start-up (None if unknown)."""
+    try:
+        cc = llm.llm_engine.vllm_config.cache_config
+        return int(cc.num_gpu_blocks) * int(cc.block_size) if cc.num_gpu_blocks else None
+    except Exception:
+        return None
+
+
+def _groups(llm, active: list[Gen], params, *, force: bool | None = None) -> list[tuple[int, int]]:
+    """Split one chunk round into consecutive groups that fit the KV cache together.
+
+    Added 13 Nov (Amendment 4, operational). On the 6 GB GPU the KV cache holds ~27k tokens, so in
+    the last rounds of a 16k-token run at most one answer fits, and one llm.generate call over all of
+    them made vLLM preempt and recompute 14k-token prefixes over and over (26 answers took 6 h 21 min).
+    Every request carries its own seed and the kernels are batch-invariant, so the text of an answer
+    does not depend on which other answers share its batch; kv_group_test.py checks this token for
+    token before the flag file is created. Only used when the flag file exists (or force=True), when
+    the round does not fit in the cache, and when at most 2 answers would fit at once.
+    """
+    n = len(active)
+    on = KV_GROUP_FLAG.exists() if force is None else force
+    cap = kv_capacity(llm) if on else None
+    if not cap or n <= 1:
+        return [(0, n)]
+    need = [len(g.prompt_ids) + len(g.out_ids) + p.max_tokens for g, p in zip(active, params)]
+    k = int(0.95 * cap) // max(need)
+    if sum(need) <= cap or k > 2:
+        return [(0, n)]
+    k = max(k, 1)
+    return [(i, min(i + k, n)) for i in range(0, n, k)]
+
+
 def generate(llm, rows: list[dict], *, max_tokens: int, temperature: float,
              top_p: float, n_samples: int = 1, early_stop: bool = True,
              seed: int = 0, presence_penalty: float = 0.0) -> list[dict]:
@@ -91,7 +128,9 @@ def generate(llm, rows: list[dict], *, max_tokens: int, temperature: float,
                 presence_penalty=presence_penalty,
                 seed=None if temperature == 0 else s,
                 skip_special_tokens=False))
-        outs = llm.generate(prompts, params, use_tqdm=True)
+        outs = []
+        for lo, hi in _groups(llm, active, params):
+            outs.extend(llm.generate(prompts[lo:hi], params[lo:hi], use_tqdm=True))
         for g, o in zip(active, outs):
             c = o.outputs[0]
             g.out_ids.extend(c.token_ids)
