@@ -573,3 +573,19 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 - LoRA dry run (4 synthetic 3,200-token sequences): peak 4.59 GiB, fits the 6 GB GPU.
 - Ollama (another project's mistral:7b eval) was stopped at 22:50 IST with Dev's OK; it was restarted by that project
   at 22:53. The A4 queue starts once the GPU is free.
+
+## Amendment 4: Game of 24 done, 2026-11-13 18:00 IST
+- Queue started 2026-11-12 08:33 IST once the GPU was free (ops/a4_gate.sh, now committed). WSL restarted during e2
+  greedy on 12 Nov; the queue was relaunched at 22:40 IST and e2 greedy rerun from scratch (base greedy reused, finished).
+- Primary family P (amendment4_primary.py; P3 pending). Both Game of 24 tests pass. P2's p (0.0138) is below
+  0.05/3, so it passes at every Holm position whatever P3 gives.
+  | game24_300 | base | e2 | fixed / broken | exact McNemar p | diff [95% CI] |
+  |---|---|---|---|---|---|
+  | P1 greedy | 2.7% | 20.3% | 58 / 5 | 1.7e-12 | +17.7 [+13.0, +22.7] |
+  | P2 sampled1 (T 0.6) | 30.3% | 39.0% | 65 / 39 | 0.0138 | +8.7 [+2.0, +15.3] |
+- Secondary: loops 94.7 -> 42.0% (greedy), 47.7 -> 6.3% (sampled); cap 8.7 -> 1.0% (sampled); answers that never
+  finish thinking 286 -> 124 (greedy), 151 -> 20 (sampled). Wall-clock: greedy 1h48m -> 1h32m, sampled 13h28m -> 4h19m.
+- Observation: sampling alone lifts base from 2.7% to 30.3% (randomness breaks its verbatim loops); the edit adds
+  +8.7 on top of that. Base sampled was slow because its last chunk round (26 answers at 14-16k tokens) barely fits
+  the 27k-token KV cache (~6 h for that round). Logged only; no settings changed.
+- Next in queue: fine-tune data (a4_ft_data.py) started 18:00 IST.
