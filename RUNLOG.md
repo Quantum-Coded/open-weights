@@ -605,3 +605,27 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   ops/kv_verify.sh holds the math_fresh1200 runs (a4_eval.py waits while HOLD_A4 exists, before loading the
   model), runs the test once the fine-tune stage is done, creates kv_group.on only if every token matches, and
   releases the queue either way. Results: logs_kv_group_test.txt, results/kv_group_test.json.
+
+## Amendment 4: fine-tune head-to-head done, 2026-11-14 01:50 IST
+- Fine-tune built exactly as pre-registered, no reruns. Data (a4_ft_data.py, 74 min): base answered the 1,200
+  practice problems at T 0.6 with a 3,072 cap; 832 finished, 368 hit the cap; 791 finished and correct kept
+  (311 MATH, 480 GSM8K; 1.20M response tokens). Training (a4_ft_train.py, 49 min): LoRA r16 on all projections,
+  18.46M trainable params (1.03%), 100 optimizer steps (2 epochs), loss 0.29 -> 0.24, no NaN, peak 4.74 GiB.
+  Merged to work/ft.
+- Family H (Holm over 4), e2 vs ft, greedy. The edit beats the fine-tune on all four sets:
+  | set | ft | e2 | fixed / broken | exact McNemar p | e2 - ft [95% CI] |
+  |---|---|---|---|---|---|
+  | H1 MATH-500/200 | 71.0% | 80.5% | 30 / 11 | 0.0043 | +9.5 [+3.5, +15.5] |
+  | H2 gsm8k_fresh400 | 75.0% | 84.2% | 49 / 12 | 2.0e-6 | +9.2 [+5.5, +13.0] |
+  | H3 mmlupro_fresh300 | 8.3% | 22.3% | 50 / 8 | 1.6e-8 | +14.0 [+9.3, +18.7] |
+  | H4 game24_300 | 1.7% | 20.3% | 59 / 3 | 1.7e-14 | +18.7 [+14.0, +23.3] |
+  Pre-registered rule: H1 and H2 both "edit beats the fine-tune", so the write-up may say the edit "can stand in for
+  a fine-tune for this fix".
+- Secondary, ft vs base (greedy): MATH-500/200 66.0 -> 71.0 (p 0.15), gsm8k_fresh400 72.2 -> 75.0 (p 0.21),
+  mmlupro_fresh300 9.7 -> 8.3 (p 0.56), game24 2.7 -> 1.7 (p 0.58). None significant. Loops barely move under the
+  fine-tune (MATH 31.5 -> 24.5%, GSM8K 23.5 -> 18.8%, MMLU-Pro 51.3 -> 56.3%, Game of 24 94.7 -> 94.0%), against
+  2.5 / 2.2 / 10.0 / 42.0% for the edit.
+- Cost: fine-tune 2 h 04 min of GPU (data 74 min + training 49 min) and 100 gradient steps on 18.5M parameters;
+  the edit changes 9,215 weights with no gradient steps (editor time is reported separately in WRITEUP).
+- Correction to my chat note to Dev: training took 49 min, not 22 (22 min was CPU "sys" time).
+- Queue: base math_fresh1200 is holding (HOLD_A4) while kv_group_test.py runs (started 01:51 IST).
