@@ -644,3 +644,22 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   To add to WRITEUP's limitations: sampled runs are not bit-reproducible; greedy runs are.
 - The test also did not reproduce the slowdown at this size (3 round-8 requests: one call 237 s vs serial 244 s);
   the 6 h round needed 26 long answers at once. Timeline returns to the slower estimate.
+
+## math_fresh1200 restarted with windowed scheduling (Dev approved), 2026-11-14 11:44 IST
+- Base math_fresh1200 sampled1 (started 02:27 IST) stalled in chunk round 4: 128 of 255 answers in 50 min, then
+  one answer took 4 h 28 min with the GPU at 99%. vLLM admitted more answers than the 27k-token KV cache holds at
+  full length and kept preempting and recomputing them. Dev chose to stop it and restart with a fix. No result file
+  had been written and no MATH result was looked at. The partial log is kept as
+  logs_a4_base_math_fresh1200_sampled1_stalled.txt.
+- Fix (gen.py window_size / generate_windowed, gated by the flag file kv_window.on): in a chunk round that does not
+  fit in the cache and where at most 3 answers fit at full length (rounds 4-8 of a 16k run; windows 3, 2, 2, 1, 1),
+  at most k answers are inside the engine at once, and the next starts as soon as one finishes. Requests go through
+  vLLM's own enqueue/step API. Prompts, seeds, T 0.6, top-p 0.95, 16k cap and loop kill are unchanged.
+- Check (kv_window_test.py, practice data): greedy at round-8 length (window 1) and round-5 mixed lengths (window 2)
+  gave identical tokens to llm.generate, and sampled at round-4 length (window 3) also matched. A first try failed
+  with a request-id mapping bug (logs_kv_window_test_try1.txt), fixed before the passing run.
+- Consequence, stated before any MATH result: sampled text depends on batch composition (kv_group_test.py), so these
+  are different but equally valid T 0.6 draws from those the stalled path would have produced. Both arms
+  (base, e2) of P3 and ft's MATH-500 sampled run use the windowed path; the older base/e2 MATH-500 sampled runs used
+  the plain path (secondary comparison only). Greedy results are unaffected.
+- Queue relaunched in tmux a4 (ops/a4.sh skips finished runs): base, e2 on math_fresh1200, then ft MATH-500 sampled.

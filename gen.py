@@ -98,6 +98,58 @@ def _groups(llm, active: list[Gen], params, *, force: bool | None = None) -> lis
     return [(i, min(i + k, n)) for i in range(0, n, k)]
 
 
+KV_WINDOW_FLAG = Path(__file__).resolve().parent / "kv_window.on"
+
+
+def window_size(llm, active: list[Gen], params, *, force: bool | None = None) -> int | None:
+    """How many answers may be in flight at once in this chunk round, or None for one plain call.
+
+    Added 14 Nov (Amendment 4, operational, approved by Dev). In long sampled runs vLLM admits more
+    answers than the ~27k-token KV cache can hold at full length, then preempts and recomputes them;
+    in rounds 4+ this stalled for hours (base math_fresh1200 round 4: one answer took 4 h 28 min).
+    The window keeps at most k answers in flight, k = how many fit at full length, and starts the next
+    one as soon as one finishes. Used only when the flag file kv_window.on exists, the round does not
+    fit in the cache, and at most 3 answers fit (rounds 4-8 of a 16k run); otherwise unchanged.
+    Sampled text depends on batch composition (kv_group_test.py), so this gives different, equally
+    valid draws than the plain call; greedy text is unchanged.
+    """
+    on = KV_WINDOW_FLAG.exists() if force is None else force
+    cap = kv_capacity(llm) if on else None
+    if not cap or len(active) <= 1:
+        return None
+    need = [len(g.prompt_ids) + len(g.out_ids) + p.max_tokens for g, p in zip(active, params)]
+    k = int(0.95 * cap) // max(need)
+    if sum(need) <= cap or k > 3:
+        return None
+    return max(k, 1)
+
+
+def generate_windowed(llm, prompts, params, k: int, use_tqdm: bool = True):
+    """Like llm.generate(prompts, params), but with at most k requests inside the engine at a time.
+    Requests are admitted in list order; outputs are returned in list order."""
+    from tqdm import tqdm
+    eng = llm.llm_engine
+    if eng.has_unfinished_requests():
+        raise RuntimeError("engine not idle")
+    out = [None] * len(prompts)
+    inflight: dict[str, int] = {}
+    nxt = 0
+    bar = tqdm(total=len(prompts), desc=f"Processed prompts (window {k})", disable=not use_tqdm)
+    while nxt < len(prompts) or inflight:
+        while nxt < len(prompts) and len(inflight) < k:
+            # LLM numbers requests with its own counter; outputs carry that external id, while
+            # enqueue() returns the engine's internal id ("<external>-<suffix>").
+            rid = llm.enqueue([prompts[nxt]], [params[nxt]], use_tqdm=False)[0]
+            inflight[rid.split("-", 1)[0]] = nxt
+            nxt += 1
+        for o in eng.step():
+            if o.finished:
+                out[inflight.pop(o.request_id.split("-", 1)[0])] = o
+                bar.update(1)
+    bar.close()
+    return out
+
+
 def generate(llm, rows: list[dict], *, max_tokens: int, temperature: float,
              top_p: float, n_samples: int = 1, early_stop: bool = True,
              seed: int = 0, presence_penalty: float = 0.0) -> list[dict]:
@@ -128,9 +180,13 @@ def generate(llm, rows: list[dict], *, max_tokens: int, temperature: float,
                 presence_penalty=presence_penalty,
                 seed=None if temperature == 0 else s,
                 skip_special_tokens=False))
-        outs = []
-        for lo, hi in _groups(llm, active, params):
-            outs.extend(llm.generate(prompts[lo:hi], params[lo:hi], use_tqdm=True))
+        k = window_size(llm, active, params)
+        if k is not None:
+            outs = generate_windowed(llm, prompts, params, k)
+        else:
+            outs = []
+            for lo, hi in _groups(llm, active, params):
+                outs.extend(llm.generate(prompts[lo:hi], params[lo:hi], use_tqdm=True))
         for g, o in zip(active, outs):
             c = o.outputs[0]
             g.out_ids.extend(c.token_ids)
