@@ -665,7 +665,7 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 - Queue relaunched in tmux a4 (ops/a4.sh skips finished runs): base, e2 on math_fresh1200, then ft MATH-500 sampled.
 
 ## Paused by Dev, 2026-11-14 14:10 IST
-- Dev is closing the laptop. Queue stopped during base math_fresh1200 sampled1 (round 1, windowed restart from
+- Dev is closing the laptop. Queue stopped during base math_fresh1200 sampled1 (chunk round 4, 21 of 400 answers, windowed restart from
   11:45 IST). Runs save only at the end, so that partial run is discarded (log kept as
   logs_a4_base_math_fresh1200_sampled1_paused.txt); no MATH result exists or was looked at.
 - Done: Game of 24 (P1, P2 pass), the fine-tune and all four head-to-heads (edit beats fine-tune on all).
