@@ -700,3 +700,13 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
     is a prefix of the recording. 85% of the well cells are repeated sentences.
   - Video data files rebuilt from these recordings (videos/race-video, wells cut). Nothing rendered or published.
 - 21:39 IST: queue relaunched; e2 math_fresh1200 sampled1 running, then ft MATH-500 sampled if the GPU window allows.
+
+## 21 Nov 2026, 22:15 IST: Amendment 5 (Rubik's cube) prepared, not yet run
+
+- Dev asked for a Rubik's cube as the post's visual hook, with real data. A mock-up with made-up numbers cannot be
+  used, so this is a new pre-registered test: cube.py (sticker-level simulator + grader, self-test passes),
+  a5_make_data.py, a5_eval.py, pilot set a5_data/cube_pilot12 (sha256 8a581de5...). The test set is 20
+  scrambles at each depth 1-5, loop detector OFF so tokens and time are what a user pays.
+- eval_plan_amendment5_DRAFT.md is a draft. It becomes eval_plan_amendment5.md and is committed after the
+  base-only pilot and before any model sees the test set. No model has run on any cube puzzle yet.
+- GPU time for it needs Dev's OK (the current window ends 08:00 IST on 22 Nov).
