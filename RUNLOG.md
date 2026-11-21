@@ -677,3 +677,12 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 ## Resumed by Dev, 2026-11-21 06:57 IST
 - GPU free (Ollama running but idle, no model loaded). kv_window.on kept. ops/a4.sh relaunched in tmux a4; it skips
   finished runs and starts base math_fresh1200 sampled1 from scratch.
+
+## Game of 24 race demo queued (POST HOC, descriptive), 2026-11-21 08:40 IST
+- Dev asked for a game in the video showing the edit answering instead of looping. Puzzle by the run-2 race rule,
+  fixed before recording: among game24_300 greedy puzzles where base was stopped as a loop and e2 is correct, the
+  shortest e2 answer -> g24-11-12-12-12 (57 candidates; e2 1,422 tokens, base loop-killed at 4,096).
+- ops/race24.sh (tmux race24) waits for MATHFRESH DONE, pauses the queue, records e2 then base single-stream
+  (greedy, no loop kill, 16k cap) with record_race.py, then relaunches the queue. record_race.py now also stores
+  eval_text_is_prefix (for a loop-killed reference) and grades Game of 24 rows.
+- Dev extended the GPU window to 01:00 IST on 22 Nov and stopped Ollama for it.

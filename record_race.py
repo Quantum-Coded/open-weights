@@ -76,8 +76,13 @@ def main() -> None:
             "tok_per_s": len(ids) / steps[-1][1] if steps and steps[-1][1] else None,
             "ref_status": r.get("status"), "ref_correct": r.get("correct"), "ref_n_tokens": r.get("n_tokens"),
             "matches_eval_text": text == r.get("response"),
+            # A loop-killed reference stops early; then the recording should start with its text.
+            "eval_text_is_prefix": bool(r.get("response")) and text.startswith(r["response"]),
             "steps": steps, "token_ids": ids, "text": text,
         }
+        if rows[pid].get("kind") == "game24":
+            from game24 import grade_game24
+            rec["correct"] = grade_game24(rows[pid], text)
         json.dump(rec, open(out_path, "w", encoding="utf-8"))
         print(f"{a.arm} {pid}: {len(ids)} tokens in {rec['wall_s']:.1f}s ({rec['tok_per_s']:.1f} tok/s), "
               f"finish={finish}, matches eval text={rec['matches_eval_text']} (ref {r.get('status')}, "
