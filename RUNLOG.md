@@ -686,3 +686,4 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   (greedy, no loop kill, 16k cap) with record_race.py, then relaunches the queue. record_race.py now also stores
   eval_text_is_prefix (for a loop-killed reference) and grades Game of 24 rows.
 - Dev extended the GPU window to 01:00 IST on 22 Nov and stopped Ollama for it.
+- 19:38 IST: Dev extended the GPU window to 08:00 IST on 22 Nov so e2 math_fresh1200 can finish.
