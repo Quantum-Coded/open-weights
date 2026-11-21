@@ -687,3 +687,16 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   eval_text_is_prefix (for a loop-killed reference) and grades Game of 24 rows.
 - Dev extended the GPU window to 01:00 IST on 22 Nov and stopped Ollama for it.
 - 19:38 IST: Dev extended the GPU window to 08:00 IST on 22 Nov so e2 math_fresh1200 can finish.
+
+## 21 Nov 2026, 21:45 IST: base math_fresh1200 sampled1 done; Game of 24 race recorded
+
+- base math_fresh1200 sampled1 (T 0.6, windowed scheduling from round 4): 85.8% correct, loops 0.9%, cap 7.7%,
+  5.52M tokens, 52,160 s (14 h 29 m). The P3 verdict waits for e2 math_fresh1200 sampled1.
+- Race recording (POST HOC, descriptive, video only; not a test): puzzle g24-11-12-12-12, single stream, greedy,
+  16,384-token cap, no loop kill.
+  - e2: 1,422 tokens in 32.8 s (43.4 tok/s), finish=stop, correct (12 + (12 x (12 - 11))), identical to the
+    eval text.
+  - base: 16,384 tokens in 485.0 s (33.8 tok/s), finish=length, no answer; the eval text (loop-killed at 4,096)
+    is a prefix of the recording. 85% of the well cells are repeated sentences.
+  - Video data files rebuilt from these recordings (videos/race-video, wells cut). Nothing rendered or published.
+- 21:39 IST: queue relaunched; e2 math_fresh1200 sampled1 running, then ft MATH-500 sampled if the GPU window allows.
