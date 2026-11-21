@@ -710,3 +710,10 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 - eval_plan_amendment5_DRAFT.md is a draft. It becomes eval_plan_amendment5.md and is committed after the
   base-only pilot and before any model sees the test set. No model has run on any cube puzzle yet.
 - GPU time for it needs Dev's OK (the current window ends 08:00 IST on 22 Nov).
+
+## 21 Nov 2026, 22:30 IST: GPU kept past 08:00 for Amendment 5
+
+- Dev: "Yes, keep the GPU" (about 12 more hours past 08:00 IST on 22 Nov), so the 07:40 stop is cancelled.
+  Amendment 4's queue runs to the end (e2 math_fresh1200 sampled1, then ft MATH-500/200 sampled).
+- ops/a5_pilot.sh (tmux a5) waits for "A4 DONE", then runs the base-only cube pilot. The test runs start only
+  after the pilot is checked and Amendment 5 is committed.
