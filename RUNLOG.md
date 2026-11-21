@@ -673,3 +673,7 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 - To resume: keep kv_window.on in place, then
   tmux new -d -s a4 "bash -lc 'cd ~/wsp-r1; source .venv/bin/activate; bash ops/a4.sh >> logs_a4.txt 2>&1'"
   (a4.sh skips every finished run). About 13-17 h of GPU left.
+
+## Resumed by Dev, 2026-11-21 06:57 IST
+- GPU free (Ollama running but idle, no model loaded). kv_window.on kept. ops/a4.sh relaunched in tmux a4; it skips
+  finished runs and starts base math_fresh1200 sampled1 from scratch.
