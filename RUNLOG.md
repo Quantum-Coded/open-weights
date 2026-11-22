@@ -717,3 +717,16 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   Amendment 4's queue runs to the end (e2 math_fresh1200 sampled1, then ft MATH-500/200 sampled).
 - ops/a5_pilot.sh (tmux a5) waits for "A4 DONE", then runs the base-only cube pilot. The test runs start only
   after the pilot is checked and Amendment 5 is committed.
+
+## 22 Nov 2026, 05:34 IST: e2 math_fresh1200 sampled1 done; Amendment 4 family P complete
+
+- e2 math_fresh1200 sampled1: 86.4% correct, loops 0.6%, cap 1.5%, 4.71M tokens, 28,454 s (7 h 54 m).
+- Family P (Holm over 3), e2 vs base:
+  - P1 game24_300 greedy: 2.7% -> 20.3%, p 1.7e-12, PASS.
+  - P2 game24_300 sampled1: 30.3% -> 39.0%, p 0.014 (Holm 0.028), PASS.
+  - P3 math_fresh1200 sampled1: 85.8% -> 86.4% (+0.6, CI -1.3 to +2.5), fixed 70 broken 63, p 0.60, FAIL.
+- So, per the pre-registered wording: the edit helps on a task nobody edited for (P1, P2), and there is no
+  significant accuracy gain on MATH at T 0.6. Secondary, not a claim: answers hitting the cap 7.7% -> 1.5%, total
+  tokens 5.52M -> 4.71M (-15%). The base run's wall time includes the windowed restart, so wall times are not
+  compared.
+- ft MATH-500/200 sampled (secondary) started 00:04 UTC; the cube pilot follows "A4 DONE".
