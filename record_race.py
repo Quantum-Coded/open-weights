@@ -33,6 +33,7 @@ def main() -> None:
     ap.add_argument("--ids", required=True)
     ap.add_argument("--set", default="sealed/gsm8k_fresh400.jsonl")
     ap.add_argument("--out", default="results/race")
+    ap.add_argument("--max-tokens", type=int, default=MAX_TOKENS)  # smaller only for pipeline dry runs
     a = ap.parse_args()
 
     from vllm import SamplingParams
@@ -40,10 +41,10 @@ def main() -> None:
     ref = {r["id"]: r for r in map(json.loads, open(a.ref, encoding="utf-8"))}
     os.makedirs(a.out, exist_ok=True)
 
-    llm = load_llm(a.model, 1024 + MAX_TOKENS)
+    llm = load_llm(a.model, 1024 + a.max_tokens)
     tok = llm.get_tokenizer()
     eng = llm.llm_engine
-    params = SamplingParams(max_tokens=MAX_TOKENS, temperature=0.0, skip_special_tokens=False)
+    params = SamplingParams(max_tokens=a.max_tokens, temperature=0.0, skip_special_tokens=False)
 
     # Warm-up on an unrelated short prompt so start-up costs do not land in the timed run.
     warm = tok("Count from 1 to 50.", add_special_tokens=False)["input_ids"]
@@ -83,6 +84,10 @@ def main() -> None:
         if rows[pid].get("kind") == "game24":
             from game24 import grade_game24
             rec["correct"] = grade_game24(rows[pid], text)
+        elif rows[pid].get("kind") == "cube":
+            from cube import grade_cube
+            rec["correct"] = grade_cube(rows[pid], text)
+            rec["scramble"] = rows[pid]["scramble"]
         json.dump(rec, open(out_path, "w", encoding="utf-8"))
         print(f"{a.arm} {pid}: {len(ids)} tokens in {rec['wall_s']:.1f}s ({rec['tok_per_s']:.1f} tok/s), "
               f"finish={finish}, matches eval text={rec['matches_eval_text']} (ref {r.get('status')}, "

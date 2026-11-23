@@ -740,3 +740,15 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   before anything used it (a5_data/cube_pilot12.jsonl is unchanged).
 - sealed/cube_100.jsonl: 20 scrambles at each depth 2-6 (depth 1 has only 18 distinct scrambles; the first build looped forever and the laptop session ended during it, so nothing ran on 22 Nov after the pilot), sha256 1ebf3d7582456e9fdf36773cf7d80a263ff88b31b0779582f00e24eb2043a839.
 - ops/a5_test.sh: base then e2, loop detector off. Starts when Dev confirms the GPU is free again.
+
+## 23 Nov 2026, 15:45 IST: Amendment 5 automated end to end; addendum committed before any test run
+
+- Dev asked for the whole amendment to run unattended once started. New: `amendment5_primary.py` (R1 McNemar,
+  R2 Wilcoxon, Holm, bootstrap CIs, race pick, video mode), `a5_video_data.py`, `a5_report.py`, `ops/a5_full.sh`,
+  `ops/a5_launch.sh`, `ops/a5_follow.sh`; `record_race.py` grades cubes and takes `--max-tokens`; Windows
+  `start_a5.ps1` keeps the laptop awake, follows the run and renders the video.
+- `eval_plan_amendment5_addendum.md`: Wilcoxon details, lower-median tie-break for the race puzzle, video
+  fallback (cube cut only if e2 solves a cube and R2 passes in e2's favour, else the Game of 24 cut).
+- Dry run (`DRY=1`, 12 pilot puzzles, 1,024-token cap, `dry_*` names): whole chain passed; both arms 0/12 at that
+  cap, so a separate check recorded pilot cube-d2-000 single-stream for both arms (text matched the batched run)
+  and built the cube video data from it. No model has run on `sealed/cube_100`.
