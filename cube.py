@@ -121,12 +121,17 @@ def scramble(rng: random.Random, depth: int) -> list[tuple[str, int]]:
 
 
 def make_row(idx: int, depth: int, moves) -> dict:
+    """Prompt v2 (22 Nov, after the base-only pilot): notation first, then the scramble on its own with its
+    length. In v1 the notation key came right after the scramble and the base model read it as more moves."""
     s = fmt(moves)
-    q = ("Rubik's cube. A standard 3x3 Rubik's cube starts solved. It is scrambled with these moves, in standard "
-         "notation: " + s + ". (U, D, L, R, F, B turn the up, down, left, right, front and back face 90 degrees "
-         "clockwise as seen looking straight at that face; a ' after a letter means counter-clockwise and a 2 "
-         "means a half turn.) Give a sequence of moves, in the same notation, that returns the cube to solved. "
-         "Give the move sequence itself as your final answer.")
+    n = len(moves)
+    q = ("Rubik's cube. Notation: U, D, L, R, F and B turn the up, down, left, right, front and back face 90 "
+         "degrees clockwise, as seen looking straight at that face; a ' after the letter means counter-clockwise "
+         "and a 2 after the letter means a half turn.\n\n"
+         f"A standard 3x3 Rubik's cube starts solved. It is then scrambled with this sequence of {n} "
+         f"move{'s' if n > 1 else ''}:\n\n{s}\n\n"
+         "Give a sequence of moves, in the same notation, that returns the cube to solved. Give the move "
+         "sequence itself as your final answer.")
     return {"id": f"cube-d{depth}-{idx:03d}", "kind": "cube", "depth": depth, "scramble": s, "question": q}
 
 

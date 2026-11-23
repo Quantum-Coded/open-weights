@@ -730,3 +730,13 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
   tokens 5.52M -> 4.71M (-15%). The base run's wall time includes the windowed restart, so wall times are not
   compared.
 - ft MATH-500/200 sampled (secondary) started 00:04 UTC; the cube pilot follows "A4 DONE".
+
+## 23 Nov 2026, 09:50 IST: Amendment 4 done; Amendment 5 committed after its pilot
+
+- ft MATH-500/200 sampled (secondary): 78.0%, loops 8.8%, cap 8.3% (base 82.0%, e2 85.25%). "A4 DONE" 04:45 UTC.
+- Cube pilot, base only: prompt v1 0/12 (all loops; 2 of 12 misread the prompt), prompt v2 0/12 (all loops, all
+  read the scramble correctly). Details in eval_plan_amendment5.md, which is committed now, before any model sees
+  the test set. The pilot result file of v1 was briefly overwritten by my script and restored from git
+  before anything used it (a5_data/cube_pilot12.jsonl is unchanged).
+- sealed/cube_100.jsonl: 20 scrambles at each depth 2-6 (depth 1 has only 18 distinct scrambles; the first build looped forever and the laptop session ended during it, so nothing ran on 22 Nov after the pilot), sha256 1ebf3d7582456e9fdf36773cf7d80a263ff88b31b0779582f00e24eb2043a839.
+- ops/a5_test.sh: base then e2, loop detector off. Starts when Dev confirms the GPU is free again.
