@@ -752,3 +752,16 @@ Run 1's frozen edit on sets built after the edit was frozen (greedy, 16,384 cap,
 - Dry run (`DRY=1`, 12 pilot puzzles, 1,024-token cap, `dry_*` names): whole chain passed; both arms 0/12 at that
   cap, so a separate check recorded pilot cube-d2-000 single-stream for both arms (text matched the batched run)
   and built the cube video data from it. No model has run on `sealed/cube_100`.
+
+## 24 Nov 2026, 14:16 IST: Amendment 5 (Rubik's cube) done
+
+- Pipeline `ops/a5_full.sh`; analysis `amendment5_primary.py` -> `results/a5_primary.json`, log `logs_a5_primary.txt`.
+- R1 accuracy: original 0% -> edit 27% (+27 points, 95% CI [+19, +36]); fixed 27, broken 0; exact McNemar p 1.49e-08, Holm p 1.49e-08: **PASS (in the edit's favour)**.
+- R2 tokens: original 1,624,276 -> edit 346,385 (edit/original 0.213, 95% CI [0.192, 0.239]); Wilcoxon signed-rank z -8.63, p 5.87e-18, Holm p 1.17e-17: **PASS (in the edit's favour)**.
+- Wall clock of the batched test runs (load + generate): original 7h29m, edit 21m50s (20.6x).
+- Answers that hit the 16,384-token limit: original 99, edit 1. Loop detector would have fired: original 99, edit 5.
+- Tokens per solved cube: original none solved, edit 12829.
+- By depth (solved / tokens): 2 moves: original 0/20 (313,556), edit 11/20 (76,436); 3 moves: original 0/20 (327,680), edit 9/20 (64,598); 4 moves: original 0/20 (327,680), edit 2/20 (61,009); 5 moves: original 0/20 (327,680), edit 5/20 (75,668); 6 moves: original 0/20 (327,680), edit 0/20 (68,674).
+- Race puzzle (pre-registered rule): cube-d2-008; single-stream: original 16,384 tokens in 523 s (length, correct False), edit 2,927 tokens in 74 s (correct True); recordings match the batched text: original True, edit True.
+- Video: cube cut; renders/a5_final.mp4 in the race-video project.
+- Claims allowed: solves more cubes, uses fewer tokens on the cube.

@@ -228,6 +228,25 @@ first 400 GSM8K test problems:
   With boxed-answer scoring: original 68.5%, run 1 75.0% (46 / 20, p = 0.0019), run 2 73.25% (33 / 14,
   p = 0.0079). Both edits pass "direction"; neither keeps its size from our harness.
 
+<!-- A5 START -->
+
+### 5.7 A second application nobody edited for: the Rubik's cube (Amendment 5)
+
+100 fresh scrambles (2 to 6 face turns, 20 at each depth). The model must give a move sequence that returns the cube to solved; a sticker-level simulator grades it (any valid solution counts). Greedy, loop detector **off**, so tokens and time are what a user would pay. Pre-registered tests R1 (accuracy, McNemar) and R2 (tokens, Wilcoxon), Holm over 2.
+
+- R1 accuracy: original 0% -> edit 27% (+27 points, 95% CI [+19, +36]); fixed 27, broken 0; exact McNemar p 1.49e-08, Holm p 1.49e-08: **PASS (in the edit's favour)**.
+- R2 tokens: original 1,624,276 -> edit 346,385 (edit/original 0.213, 95% CI [0.192, 0.239]); Wilcoxon signed-rank z -8.63, p 5.87e-18, Holm p 1.17e-17: **PASS (in the edit's favour)**.
+- Wall clock of the batched test runs (load + generate): original 7h29m, edit 21m50s (20.6x).
+- Answers that hit the 16,384-token limit: original 99, edit 1. Loop detector would have fired: original 99, edit 5.
+- Tokens per solved cube: original none solved, edit 12829.
+- By depth (solved / tokens): 2 moves: original 0/20 (313,556), edit 11/20 (76,436); 3 moves: original 0/20 (327,680), edit 9/20 (64,598); 4 moves: original 0/20 (327,680), edit 2/20 (61,009); 5 moves: original 0/20 (327,680), edit 5/20 (75,668); 6 moves: original 0/20 (327,680), edit 0/20 (68,674).
+- Race puzzle (pre-registered rule): cube-d2-008; single-stream: original 16,384 tokens in 523 s (length, correct False), edit 2,927 tokens in 74 s (correct True); recordings match the batched text: original True, edit True.
+- Video: cube cut; renders/a5_final.mp4 in the race-video project.
+
+Claims allowed: solves more cubes, uses fewer tokens on the cube.
+
+<!-- A5 END -->
+
 ## 6. Methodology
 
 - **Pre-registration:** arms, metrics, tests, token cap, loop detector, random controls and example rules
